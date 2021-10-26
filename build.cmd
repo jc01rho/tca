@@ -1,6 +1,6 @@
 set arg1=%1
 
-wget -c https://download.jetbrains.com/teamcity/TeamCity-%arg1%%.tar.gz
+wget -c https://download.jetbrains.com/teamcity/TeamCity-%arg1%.tar.gz
 tar -zxvf TeamCity-%arg1%.tar.gz -C context
 
 call generate.cmd
