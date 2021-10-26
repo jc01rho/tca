@@ -1,0 +1,9 @@
+**/obj/
+**/bin/
+**/.vs/
+**/.gradle/
+**/.idea/
+context/TeamCity/
+*.iml
+tool/agent-upgrade-dist/build/
+context/.dockerignore
