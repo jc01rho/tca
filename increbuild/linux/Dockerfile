@@ -10,7 +10,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN bash -c 'echo "DOCKER_OPTS=\"--insecure-registry 192.168.11.124:8082 --insecure-registry 192.168.11.124:8099  --insecure-registry 192.168.100.123:10301 \"" >> /etc/default/docker'
-RUN service docker restart
+RUN service docker restart; exit 0
 
 USER buildagent
 
