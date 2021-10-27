@@ -50,4 +50,4 @@ RUN Write-Host ('Downloading {0} ...' -f $env:DOCKER_URL); \
 USER ContainerUser
 
 
-CMD pwsh ./BuildAgent/run-agent.ps1
+CMD pwsh docker network create --driver nat nat-driver ; ./BuildAgent/run-agent.ps1
