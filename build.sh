@@ -20,7 +20,7 @@
 
 
 #2021.2
-docker build -f increbuild/linux/Dockerfile -t 192.168.100.123:10301/infra/teamcity-agent:2021.2-linux-sudo-sparrow-1  -t 192.168.100.123:10301/infra/teamcity-agent:latest
+docker build -f increbuild/linux/Dockerfile -t 192.168.100.123:10301/infra/teamcity-agent:2021.2-linux-sudo-sparrow-1  -t 192.168.100.123:10301/infra/teamcity-agent:latest .
 
 
 docker login -u admin -p 1234 192.168.100.123:10301
