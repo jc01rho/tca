@@ -48,3 +48,6 @@ RUN Write-Host ('Downloading {0} ...' -f $env:DOCKER_URL); \
 	Write-Host 'Complete.';
 
 USER ContainerUser
+
+
+CMD pwsh ./BuildAgent/run-agent.ps1
