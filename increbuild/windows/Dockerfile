@@ -2,12 +2,12 @@ FROM 192.168.100.123:10301/mirror/jetbrains/teamcity-agent:2021.2-windowsserverc
 
 USER ContainerAdministrator
 
-
+COPY vs_buildtools.exe vs_buildtools.exe
 SHELL ["cmd", "/S", "/C"]
 
 RUN \
     # Download the Build Tools bootstrapper.
-    curl -SL --output vs_buildtools.exe https://aka.ms/vs/16/release/vs_buildtools.exe \
+    # curl -SL --output vs_buildtools.exe https://aka.ms/vs/16/release/vs_buildtools.exe \
     \
     # Install Build Tools with the Microsoft.VisualStudio.Workload.AzureBuildTools workload, excluding workloads and components with known issues.
     && (start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify \
