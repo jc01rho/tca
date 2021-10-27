@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <settings xmlns="http://maven.apache.org/SETTINGS/1.1.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">
+  <servers>
+      <server>
+        <id>Releases</id>
+        <username>admin</username>
+        <password>sparrow</password>
+     </server>
+      <server>
+        <id>Snapshots</id>
+        <username>admin</username>
+        <password>sparrow</password>
+      </server>
+     <server>
+        <id>SparrowNexus</id>
+        <username>admin</username>
+        <password>1234</password>
+      </server>
+  </servers>
+   <mirrors>
+           <mirror>
+            <id>SparrowNexus</id>
+            <mirrorOf>central</mirrorOf>
+            <name>Maven central https</name>
+            <url>http://192.168.100.123:8081/repository/public/</url>
+          </mirror>
+        <mirror>
+           <id>centralInsecure</id>
+           <name>Central Repository</name>
+           <url>http://insecure.repo1.maven.org/maven2/</url>
+           <mirrorOf>central</mirrorOf>
+        </mirror>
+   </mirrors>
+   <profiles>
+        <profile>
+           <id>myprofile</id>
+           <pluginRepositories>
+              <pluginRepository>
+                 <releases>
+                    <updatePolicy>always</updatePolicy>
+                 </releases>
+                 <snapshots>
+                    <updatePolicy>always</updatePolicy>
+                    <enabled>true</enabled>
+                 </snapshots>
+                 <id>central</id>
+                 <name>Central Repository</name>
+                 <url>http://192.168.100.123:8081/repository/Central2/</url>
+              </pluginRepository>
+           </pluginRepositories>
+           <repositories>
+              <repository>
+                 <id>public</id>
+                 <name>maven central mirror Repository</name>
+                 <url>http://192.168.100.123:8081/repository/public/</url>
+                 <releases>
+                    <updatePolicy>always</updatePolicy>
+                    <enabled>true</enabled>
+                 </releases>
+                 <snapshots>
+                    <updatePolicy>always</updatePolicy>
+                    <enabled>true</enabled>
+                 </snapshots>
+              </repository>
+           </repositories>
+        </profile>
+     </profiles>
+     <activeProfiles>
+        <activeProfile>myprofile</activeProfile>
+     </activeProfiles>
+  </settings>
