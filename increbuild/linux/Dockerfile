@@ -2,7 +2,7 @@ FROM 192.168.100.123:10301/mirror/jetbrains/teamcity-agent:2021.2-linux-sudo
 
 USER root
 
-RUN service docker start
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends wget && \
     # https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#dkl-di-0005
@@ -10,7 +10,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN bash -c 'echo "DOCKER_OPTS=\"--insecure-registry 192.168.11.124:8082 --insecure-registry 192.168.11.124:8099  --insecure-registry 192.168.100.123:10301 \"" >> /etc/default/docker'
-
+RUN service docker restart
 
 USER buildagent
 
