@@ -14,7 +14,7 @@ RUN service docker restart; exit 0
 
 USER buildagent
 
-RUN mkdir ~/.m2; cd ~/.m2; echo "<?xml version="1.0" encoding="UTF-8"?>\n\ 
+RUN mkdir ~/.m2; cd ~/.m2; echo '<?xml version="1.0" encoding="UTF-8"?>\n\ 
   <settings xmlns="http://maven.apache.org/SETTINGS/1.1.0"\n\ 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n\ 
     xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">\n\ 
@@ -86,11 +86,26 @@ RUN mkdir ~/.m2; cd ~/.m2; echo "<?xml version="1.0" encoding="UTF-8"?>\n\
      <activeProfiles>\n\ 
         <activeProfile>myprofile</activeProfile>\n\ 
      </activeProfiles>\n\ 
-  </settings>" > settings.xml
+  </settings>' > settings.xml
 #2021.1.4-linux-sudo-3
 RUN cd /usr/local/bin; sudo curl -LO https://dl.k8s.io/release/v1.21.4/bin/linux/amd64/kubectl ;sudo chmod +x kubectl ; cd ~ ;curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash 
 #2021.1.4-linux-sudo-4
-RUN docker login -u 'robot$teamcity' -p "CYUnhdZeCWBuXcGeSBRwiRXPfZIkcylC" 192.168.100.123:10301
+#RUN docker login -u 'robot$teamcity' -p "CYUnhdZeCWBuXcGeSBRwiRXPfZIkcylC" 192.168.100.123:10301
+
+RUN mkdir ~/.docker; cd ~/.docker; echo ' {\n\ 
+        "auths": {\n\ 
+                "192.168.100.123:10301": {\n\ 
+                        "auth": "cm9ib3QkdGVhbWNpdHk6Q1lVbmhkWmVDV0J1WGNHZVNCUndpUlhQZlpJa2N5bEM="\n\ 
+                },\n\ 
+                "192.168.11.124:8099": {\n\ 
+                        "auth": "c2FzdDpzYXN0"\n\ 
+                },\n\ 
+                "https://index.docker.io/v1/": {\n\ 
+                        "auth": "c3BhcnJvd3Nhc3Q6YTEyMzQ1Njc4IQ=="\n\ 
+                }\n\ 
+        }\n\ 
+}'  > config.json
+
 
 USER root
 RUN service docker stop
