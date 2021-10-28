@@ -22,14 +22,14 @@ RUN \
     # Cleanup
     && del /q vs_buildtools.exe
     
-RUN $newPath = ('{0}\docker;{1}' -f "c:\\", $env:PATH); \
-	Write-Host ('Updating PATH: {0}' -f $newPath); \
-	[Environment]::SetEnvironmentVariable('PATH', $newPath, [EnvironmentVariableTarget]::Machine);
+
     
 
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
-
+RUN $newPath = ('{0}\docker;{1}' -f "c:\\", $env:PATH); \
+	Write-Host ('Updating PATH: {0}' -f $newPath); \
+	[Environment]::SetEnvironmentVariable('PATH', $newPath, [EnvironmentVariableTarget]::Machine);
 # RUN $newPath = ('{0}\docker;{1}' -f $env:ProgramFiles, $env:PATH); \
 # 	Write-Host ('Updating PATH: {0}' -f $newPath); \
 # 	[Environment]::SetEnvironmentVariable('PATH', $newPath, [EnvironmentVariableTarget]::Machine);
