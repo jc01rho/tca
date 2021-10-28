@@ -21,25 +21,34 @@ RUN \
     \
     # Cleanup
     && del /q vs_buildtools.exe
-
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
-ENV DOCKER_VERSION=20.10.9
-ENV DOCKER_URL=https://download.docker.com/win/static/stable/x86_64/docker-20.10.9.zip
-RUN $newPath = ('{0}\docker;{1}' -f $env:ProgramFiles, $env:PATH); \
+    
+RUN $newPath = ('{0}\docker;{1}' -f "c:\\", $env:PATH); \
 	Write-Host ('Updating PATH: {0}' -f $newPath); \
 	[Environment]::SetEnvironmentVariable('PATH', $newPath, [EnvironmentVariableTarget]::Machine);
     
+
+
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+# RUN $newPath = ('{0}\docker;{1}' -f $env:ProgramFiles, $env:PATH); \
+# 	Write-Host ('Updating PATH: {0}' -f $newPath); \
+# 	[Environment]::SetEnvironmentVariable('PATH', $newPath, [EnvironmentVariableTarget]::Machine);
+    
+
+USER ContainerUser
+ENV DOCKER_VERSION=20.10.6
+ENV DOCKER_URL=https://download.docker.com/win/static/stable/x86_64/docker-20.10.6.zip
 RUN Write-Host ('Downloading {0} ...' -f $env:DOCKER_URL); \
 	Invoke-WebRequest -Uri $env:DOCKER_URL -OutFile 'docker.zip'; \
 	\
 	Write-Host 'Expanding ...'; \
-	Expand-Archive docker.zip -DestinationPath $env:ProgramFiles; \
+	Expand-Archive docker.zip -DestinationPath "c:\\"; \
 # (this archive has a "docker/..." directory in it already)
 	\
 	Write-Host 'Removing ...'; \
 	Remove-Item @( \
 			'docker.zip', \
-			('{0}\docker\dockerd.exe' -f $env:ProgramFiles) \
+			('{0}\docker\dockerd.exe' -f "c:\\") \
 		) -Force; \
 	\
 	Write-Host 'Verifying install ("docker --version") ...'; \
@@ -47,6 +56,5 @@ RUN Write-Host ('Downloading {0} ...' -f $env:DOCKER_URL); \
 	\
 	Write-Host 'Complete.';
 
-USER ContainerUser
 
 #CMD powershell Start-Sleep -s 20; docker network create --driver nat nat-driver ; ./BuildAgent/run-agent.ps1
