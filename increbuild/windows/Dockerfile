@@ -1,60 +1,141 @@
-FROM 192.168.100.123:10301/mirror/jetbrains/teamcity-agent:2021.2-windowsservercore-1809
+# escape=`
+
+FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.1-windowsservercore-1809
 
 USER ContainerAdministrator
+# COPY context/run-agent.ps1 ./BuildAgent/.
 
-COPY vs_buildtools.exe vs_buildtools.exe
+# Copy our Install script.
 SHELL ["cmd", "/S", "/C"]
+COPY Install.cmd C:/TEMP/
+COPY sdksetup.exe .
 
-RUN \
+
+
+
+ADD https://aka.ms/vscollect.exe C:/TEMP/collect.exe
+ARG CHANNEL_URL=https://aka.ms/vs/16/release/channel
+ADD ${CHANNEL_URL} C:/TEMP/VisualStudio.chman
+
+
+
+RUN `
+    # Download the Build Tools bootstrapper.
+    curl -SL --output vs_buildtools.exe https://aka.ms/vs/16/release/vs_buildtools.exe  && `
+    `
+    # Install Build Tools with the Microsoft.VisualStudio.Workload.AzureBuildTools workload, excluding workloads and components with known issues.
+    (start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify `
+        --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools" ` 
+		--channelUri C:\TEMP\VisualStudio.chman `
+        --installChannelUri C:\TEMP\VisualStudio.chman `
+        --add Microsoft.VisualStudio.Workload.VCTools `
+		--includeRecommended `
+        --add Microsoft.VisualStudio.Component.VC.140 `
+		--add Microsoft.VisualStudio.Component.VC.v141.x86.x64 `
+        --add Microsoft.VisualStudio.Component.VC.CLI.Support `
+		--add Microsoft.VisualStudio.Component.VC.ATL `
+		--add Microsoft.VisualStudio.Component.VC.ATLMFC `
+		--add Microsoft.VisualStudio.Component.Windows81SDK `
+        || IF "%ERRORLEVEL%"=="3010" EXIT 0) `
+    `
+    # Cleanup
+    && del /q vs_buildtools.exe `
+	&& (start /w sdksetup.exe /features + /q /norestart) `
+	&& del /q sdksetup.exe 
+
+
+# RUN $ErrorActionPreference = 'Stop'; \
+#     $ProgressPreference = 'SilentlyContinue'; \
+#     $VerbosePreference = 'Continue'; \
+#     $p = Start-Process -Wait -PassThru -FilePath vs_buildtools_15.exe -ArgumentList \
+#     '--quiet --addProductLang ko-KR --includeOptional --nocache --wait --installPath %ProgramFiles(x86)%\Microsoft Visual Studio\2015\BuildTools \
+#     --add Microsoft.VisualStudio.Workload.MSBuildTools \
+#     '; \
+#     if ($ret = $p.ExitCode) { throw ('Install failed with exit code 0x{0:x}' -f $ret) }; 
+    
+
+# RUN \
     # Download the Build Tools bootstrapper.
     # curl -SL --output vs_buildtools.exe https://aka.ms/vs/16/release/vs_buildtools.exe \
-    \
+    # \
     # Install Build Tools with the Microsoft.VisualStudio.Workload.AzureBuildTools workload, excluding workloads and components with known issues.
-    (start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify \
-        --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\BuildTools" \
-        --add Microsoft.VisualStudio.Workload.AzureBuildTools \
-        --remove Microsoft.VisualStudio.Component.Windows10SDK.10240 \
-        --remove Microsoft.VisualStudio.Component.Windows10SDK.10586 \
-        --remove Microsoft.VisualStudio.Component.Windows10SDK.14393 \
-        --remove Microsoft.VisualStudio.Component.Windows81SDK \
-        || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
-    \
+    # (start /w vs_buildtools_15.exe --quiet --wait --norestart --nocache modify \
+    #     --add Microsoft.VisualStudio.Workload.VCTools\
+	# 	--includeRecommended \
+	# 	--add Microsoft.VisualStudio.Component.VC.ATL \
+	# 	--add Microsoft.VisualStudio.Component.VC.ATLMFC \
+	# 	--add Microsoft.VisualStudio.Component.VC.CLI.Support \
+	# 	--add Microsoft.VisualStudio.Workload.MSBuildTools \
+    #     --add Microsoft.VisualStudio.Component.Windows10SDK.10240 \
+    #     --add Microsoft.VisualStudio.Component.Windows10SDK.10586 \
+    #     --add Microsoft.VisualStudio.Component.Windows10SDK.14393 \
+    #     --add Microsoft.VisualStudio.Component.Windows81SDK \
+    #     || IF "%ERRORLEVEL%"=="3010" EXIT 0) \
+    # \
     # Cleanup
-    && del /q vs_buildtools.exe
-    
+    # && del /q vs_buildtools_15.exe
 
-    
+# RUN (start /w BuildTools_Full.exe /Full /Q /NoRestart ) \
+# 	&& (start /w visualcppbuildtools_full.exe /Full /Q /NoRestart  ) \
+#     && del /q BuildTools_Full.exe && del /q visualcppbuildtools_full.exe
+
+
 
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
-RUN $newPath = ('{0}\docker;{1}' -f "c:\\", $env:PATH); \
-	Write-Host ('Updating PATH: {0}' -f $newPath); \
-	[Environment]::SetEnvironmentVariable('PATH', $newPath, [EnvironmentVariableTarget]::Machine);
-# RUN $newPath = ('{0}\docker;{1}' -f $env:ProgramFiles, $env:PATH); \
-# 	Write-Host ('Updating PATH: {0}' -f $newPath); \
-# 	[Environment]::SetEnvironmentVariable('PATH', $newPath, [EnvironmentVariableTarget]::Machine);
-    
-
-USER ContainerUser
 ENV DOCKER_VERSION=20.10.6
 ENV DOCKER_URL=https://download.docker.com/win/static/stable/x86_64/docker-20.10.6.zip
-RUN Write-Host ('Downloading {0} ...' -f $env:DOCKER_URL); \
-	Invoke-WebRequest -Uri $env:DOCKER_URL -OutFile 'docker.zip'; \
-	\
-	Write-Host 'Expanding ...'; \
-	Expand-Archive docker.zip -DestinationPath "c:\\"; \
+RUN $newPath = ('{0}\docker;{1}' -f $env:ProgramFiles, $env:PATH); `
+	Write-Host ('Updating PATH: {0}' -f $newPath); `
+	[Environment]::SetEnvironmentVariable('PATH', $newPath, [EnvironmentVariableTarget]::Machine);
+    
+RUN Write-Host ('Downloading {0} ...' -f $env:DOCKER_URL); `
+	Invoke-WebRequest -Uri $env:DOCKER_URL -OutFile 'docker.zip'; `
+	`
+	Write-Host 'Expanding ...'; `
+	Expand-Archive docker.zip -DestinationPath $env:ProgramFiles; `
 # (this archive has a "docker/..." directory in it already)
-	\
-	Write-Host 'Removing ...'; \
-	Remove-Item @( \
-			'docker.zip', \
-			('{0}\docker\dockerd.exe' -f "c:\\") \
-		) -Force; \
-	\
-	Write-Host 'Verifying install ("docker --version") ...'; \
-	docker --version; \
-	\
+	`
+	Write-Host 'Removing ...'; `
+	Remove-Item @( `
+			'docker.zip', `
+			('{0}\docker\dockerd.exe' -f $env:ProgramFiles) `
+		) -Force; `
+	`
+	Write-Host 'Verifying install ("docker --version") ...'; `
+	docker --version; `
+	`
 	Write-Host 'Complete.';
 
+SHELL ["powershell.exe", "-ExecutionPolicy", "Bypass", "-Command"]
+
+
+# RUN choco install microsoft-visual-cpp-build-tools --force -y
+
+# due to docker pipeline, you must run win admin
+# USER ContainerUser
 
 #CMD powershell Start-Sleep -s 20; docker network create --driver nat nat-driver ; ./BuildAgent/run-agent.ps1
+# RUN  (Get-Content "./BuildAgent/run-agent.ps1") | Add-Content "./BuildAgent/run-sparrow-agent.ps1";
+
+
+
+# ENTRYPOINT C:\BuildTools\Common7\Tools\VsDevCmd.bat -arch=amd64 -host_arch=amd64 &&
+
+# CMD pwsh ./BuildAgent/run-sparrow-agent.ps1
+
+COPY config.json C:/Users/ContainerAdministrator/.docker/config.json
+RUN Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+
+RUN choco feature enable -n=allowGlobalConfirmation
+RUN choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress
+
+COPY LLVM32/ C:/LLVM32/
+COPY boost160_x86/ C:/boost160_x86/
+
+
+
+SHELL ["cmd", "/S", "/C"]
+ENTRYPOINT ["C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\Tools\\VsDevCmd.bat", "&&", "powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]
+CMD ["./BuildAgent/run-agent.ps1"]

@@ -1,20 +1,20 @@
-FROM 192.168.100.123:10301/mirror/jetbrains/teamcity-agent:2021.2-linux-sudo
+FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.1-linux-sudo
 
 USER root
 
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends wget && \
+    apt-get install -y wget iputils-ping dnsutils && \
     # https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#dkl-di-0005
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/lib/apt/lists/*
 
-RUN bash -c 'echo "DOCKER_OPTS=\"--insecure-registry 192.168.11.124:8082 --insecure-registry 192.168.11.124:8099  --insecure-registry 192.168.100.123:10301 \"" >> /etc/default/docker'
-RUN service docker restart; exit 0
+RUN bash -c 'echo "DOCKER_OPTS=\"--insecure-registry 192.168.11.124:8082 --insecure-registry 192.168.11.124:8099  --insecure-registry sparrow-harbor.fasoo.com:32023 \"" >> /etc/default/docker'
+RUN git config --global core.symlinks false ; chown root:root /usr/bin/sudo && chmod 4755 /usr/bin/sudo; chown root:root /usr/lib/sudo/sudoers.so; chown root:root /etc/sudoers; exit 0
 
 USER buildagent
 
-RUN mkdir ~/.m2; cd ~/.m2; echo '<?xml version="1.0" encoding="UTF-8"?>\n\ 
+RUN git config --global core.symlinks false ; mkdir ~/.m2; cd ~/.m2; echo '<?xml version="1.0" encoding="UTF-8"?>\n\ 
   <settings xmlns="http://maven.apache.org/SETTINGS/1.1.0"\n\ 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\n\ 
     xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.1.0 http://maven.apache.org/xsd/settings-1.1.0.xsd">\n\ 
@@ -90,13 +90,13 @@ RUN mkdir ~/.m2; cd ~/.m2; echo '<?xml version="1.0" encoding="UTF-8"?>\n\
 #2021.1.4-linux-sudo-3
 RUN cd /usr/local/bin; sudo curl -LO https://dl.k8s.io/release/v1.21.4/bin/linux/amd64/kubectl ;sudo chmod +x kubectl ; cd ~ ;curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash 
 #2021.1.4-linux-sudo-4
-#RUN docker login -u 'robot$teamcity' -p "CYUnhdZeCWBuXcGeSBRwiRXPfZIkcylC" 192.168.100.123:10301
+#RUN docker login -u 'robot$teamcity' -p "CYUnhdZeCWBuXcGeSBRwiRXPfZIkcylC" sparrow-harbor.fasoo.com:32023
 
 RUN mkdir ~/.docker; cd ~/.docker; echo ' {\n\ 
         "auths": {\n\ 
-                "192.168.100.123:10301": {\n\ 
-                        "auth": "cm9ib3QkdGVhbWNpdHk6Q1lVbmhkWmVDV0J1WGNHZVNCUndpUlhQZlpJa2N5bEM="\n\ 
-                },\n\ 
+                "sparrow-harbor.fasoo.com:32023": { \n\
+                        "auth": "cm9ib3QkdGVhbWNpdHlfYWdlbnQ6eWEzS2E4aGVBWkgwbm5GaGVoSEQ0cm5kaXpIamZ3dzg=" \n\
+                }, \n\
                 "192.168.11.124:8099": {\n\ 
                         "auth": "c2FzdDpzYXN0"\n\ 
                 },\n\ 
@@ -107,5 +107,4 @@ RUN mkdir ~/.docker; cd ~/.docker; echo ' {\n\
 }'  > config.json
 
 
-USER root
-RUN service docker stop
+
