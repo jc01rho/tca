@@ -1,4 +1,4 @@
-FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.1-linux-sudo
+FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.2-linux-sudo
 
 USER root
 

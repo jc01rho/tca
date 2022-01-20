@@ -1,6 +1,6 @@
 # escape=`
 
-FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.1-windowsservercore-1809
+FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.2-windowsservercore-1809
 
 USER ContainerAdministrator
 # COPY context/run-agent.ps1 ./BuildAgent/.
