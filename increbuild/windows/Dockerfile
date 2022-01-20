@@ -25,7 +25,7 @@ RUN `
     `
     # Install Build Tools with the Microsoft.VisualStudio.Workload.AzureBuildTools workload, excluding workloads and components with known issues.
     (start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify `
-        --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools" ` 
+        --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\BuildTools" ` 
 		--channelUri C:\TEMP\VisualStudio.chman `
         --installChannelUri C:\TEMP\VisualStudio.chman `
         --add Microsoft.VisualStudio.Workload.VCTools `
@@ -137,5 +137,5 @@ COPY boost160_x86/ C:/boost160_x86/
 
 
 SHELL ["cmd", "/S", "/C"]
-ENTRYPOINT ["C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\Tools\\VsDevCmd.bat", "&&", "powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]
+ENTRYPOINT ["C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\BuildTools\\Common7\\Tools\\VsDevCmd.bat", "&&", "powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]
 CMD ["./BuildAgent/run-agent.ps1"]
