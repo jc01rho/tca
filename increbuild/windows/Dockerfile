@@ -1,6 +1,6 @@
 # escape=`
 
-FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.2-windowsservercore-1809
+FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.2-windowsservercore
 
 USER ContainerAdministrator
 # COPY context/run-agent.ps1 ./BuildAgent/.
@@ -24,8 +24,11 @@ RUN `
     curl -SL --output vs_buildtools.exe https://aka.ms/vs/16/release/vs_buildtools.exe  && `
     `
     # Install Build Tools with the Microsoft.VisualStudio.Workload.AzureBuildTools workload, excluding workloads and components with known issues.
+		# --channelUri C:\TEMP\VisualStudio.chman `
+        # --installChannelUri C:\TEMP\VisualStudio.chman `
+		# --includeRecommended `
     (start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify `
-        --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\BuildTools" ` 
+        --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\BuildTools" `
 		--channelUri C:\TEMP\VisualStudio.chman `
         --installChannelUri C:\TEMP\VisualStudio.chman `
         --add Microsoft.VisualStudio.Workload.VCTools `
@@ -36,9 +39,10 @@ RUN `
 		--add Microsoft.VisualStudio.Component.VC.ATL `
 		--add Microsoft.VisualStudio.Component.VC.ATLMFC `
 		--add Microsoft.VisualStudio.Component.Windows81SDK `
-        || IF "%ERRORLEVEL%"=="3010" EXIT 0) `
+         `
     `
     # Cleanup
+	&& start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify `
     && del /q vs_buildtools.exe `
 	&& (start /w sdksetup.exe /features + /q /norestart) `
 	&& del /q sdksetup.exe 
