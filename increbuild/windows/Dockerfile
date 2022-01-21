@@ -27,7 +27,7 @@ RUN `
 		# --channelUri C:\TEMP\VisualStudio.chman `
         # --installChannelUri C:\TEMP\VisualStudio.chman `
 		# --includeRecommended `
-    (start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify `
+    start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify `
         --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\BuildTools" `
 		--channelUri C:\TEMP\VisualStudio.chman `
         --installChannelUri C:\TEMP\VisualStudio.chman `
@@ -42,7 +42,7 @@ RUN `
          `
     `
     # Cleanup
-	&& start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify `
+	&& start /w vs_buildtools.exe --quiet --wait --norestart --nocache `
     && del /q vs_buildtools.exe `
 	&& (start /w sdksetup.exe /features + /q /norestart) `
 	&& del /q sdksetup.exe 
