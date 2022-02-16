@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y software-properties-common gnupg curl &
     rm ./zulu-repo_1.0.0-3_all.deb && \
     apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main' && \
     apt-get update && \
-    apt-get install -y wget iputils-ping dnsutils zulu-8 zulu-13 zip ubzip git openssh-client && \
+    apt-get install -y wget iputils-ping dnsutils zulu-8 zulu-13 zip unzip git openssh-client && \
     # https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#dkl-di-0005
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/lib/apt/lists/*
