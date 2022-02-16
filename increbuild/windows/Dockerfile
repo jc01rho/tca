@@ -14,38 +14,12 @@ COPY sdksetup.exe .
 
 
 ADD https://aka.ms/vscollect.exe C:/TEMP/collect.exe
-ARG CHANNEL_URL=https://aka.ms/vs/16/release/channel
+ADD manualRun.cmd C:/manualRun.cmd
+ARG CHANNEL_URL=https://aka.ms/vs/15/release/channel
 ADD ${CHANNEL_URL} C:/TEMP/VisualStudio.chman
 
 
 
-RUN `
-    # Download the Build Tools bootstrapper.
-    curl -SL --output vs_buildtools.exe https://aka.ms/vs/16/release/vs_buildtools.exe  && `
-    `
-    # Install Build Tools with the Microsoft.VisualStudio.Workload.AzureBuildTools workload, excluding workloads and components with known issues.
-		# --channelUri C:\TEMP\VisualStudio.chman `
-        # --installChannelUri C:\TEMP\VisualStudio.chman `
-		# --includeRecommended `
-    start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify `
-        --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\BuildTools" `
-		--channelUri C:\TEMP\VisualStudio.chman `
-        --installChannelUri C:\TEMP\VisualStudio.chman `
-        --add Microsoft.VisualStudio.Workload.VCTools `
-		--includeRecommended `
-        --add Microsoft.VisualStudio.Component.VC.140 `
-		--add Microsoft.VisualStudio.Component.VC.v141.x86.x64 `
-        --add Microsoft.VisualStudio.Component.VC.CLI.Support `
-		--add Microsoft.VisualStudio.Component.VC.ATL `
-		--add Microsoft.VisualStudio.Component.VC.ATLMFC `
-		--add Microsoft.VisualStudio.Component.Windows81SDK `
-         `
-    `
-    # Cleanup
-	&& start /w vs_buildtools.exe --quiet --wait --norestart --nocache `
-    && del /q vs_buildtools.exe `
-	&& (start /w sdksetup.exe /features + /q /norestart) `
-	&& del /q sdksetup.exe 
 
 
 # RUN $ErrorActionPreference = 'Stop'; \
@@ -135,11 +109,54 @@ RUN Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointMa
 RUN choco feature enable -n=allowGlobalConfirmation
 RUN choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress
 
+
 COPY LLVM32/ C:/LLVM32/
 COPY boost160_x86/ C:/boost160_x86/
 
-
+RUN choco install maven
 
 SHELL ["cmd", "/S", "/C"]
-ENTRYPOINT ["C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\BuildTools\\Common7\\Tools\\VsDevCmd.bat", "&&", "powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]
-CMD ["./BuildAgent/run-agent.ps1"]
+
+
+RUN `
+    # Download the Build Tools bootstrapper.
+    curl -SL --output vs_buildtools.exe https://aka.ms/vs/15/release/vs_buildtools.exe   & `
+	curl -SL --output java_1.8.zip https://cdn.azul.com/zulu/bin/zulu8.60.0.21-ca-jdk8.0.322-win_x64.zip & ` 
+	curl -SL --output java_13.zip https://cdn.azul.com/zulu/bin/zulu13.46.15-ca-jdk13.0.10-win_x64.zip & `
+    # `
+    # # Install Build Tools with the Microsoft.VisualStudio.Workload.AzureBuildTools workload, excluding workloads and components with known issues.
+	# 	# --channelUri C:\TEMP\VisualStudio.chman `
+    #     # --installChannelUri C:\TEMP\VisualStudio.chman `
+	# 	# --includeRecommended `
+	# & 하나로 바꿔서 빌드 되는지 확인하고, java 압축해제 및 path 등록 스크립트화 해서 다시 빌드해보기
+	powershell cmd /c start /w vs_buildtools.exe --quiet --wait --norestart --nocache & `
+    start /w vs_buildtools.exe --quiet --wait --norestart --nocache & `
+	start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify  --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\BuildTools"  --add Microsoft.VisualStudio.Workload.VCTools  --add Microsoft.Component.MSBuild  --add Microsoft.VisualStudio.Component.VC.140  --add Microsoft.VisualStudio.Component.VC.CLI.Support  --add Microsoft.VisualStudio.Component.VC.ATL  --add Microsoft.VisualStudio.Component.VC.ATLMFC  --add Microsoft.VisualStudio.Component.Windows81SDK  --includeRecommended 
+    #     --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\BuildTools" `
+    #     --add Microsoft.VisualStudio.Workload.VCTools `
+	# 	--add Microsoft.Component.MSBuild `
+    #     --add Microsoft.VisualStudio.Component.VC.140 `
+    #     --add Microsoft.VisualStudio.Component.VC.CLI.Support `
+	# 	--add Microsoft.VisualStudio.Component.VC.ATL `
+	# 	--add Microsoft.VisualStudio.Component.VC.ATLMFC `
+	# 	--add Microsoft.VisualStudio.Component.Windows81SDK `
+	# 	--includeRecommended `
+    # # Cleanup
+	# && (start /w sdksetup.exe /features + /q /norestart) `
+	# && del /q sdksetup.exe 
+
+
+
+COPY entrypoint.cmd "c:\\"
+# RUN `
+# 	curl -SL --output vs_buildtools.exe https://aka.ms/vs/15/release/vs_buildtools.exe  && `
+# 	start /w vs_buildtools.exe --quiet --wait --norestart --nocache
+
+
+
+
+# ENTRYPOINT ["cmd","/c", "c:\\entrypoint.cmd"]
+
+
+ENTRYPOINT ["cmd"]
+CMD ["/c", "c:\\entrypoint.cmd"]

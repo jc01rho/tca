@@ -1,10 +1,15 @@
-FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.2-linux-sudo
+FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.3-linux-sudo
 
 USER root
 
 
-RUN apt-get update && \
-    apt-get install -y wget iputils-ping dnsutils && \
+RUN apt-get update && apt-get install -y software-properties-common gnupg curl && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9 && \
+    curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb && \
+    apt-get install ./zulu-repo_1.0.0-3_all.deb && \
+    rm ./zulu-repo_1.0.0-3_all.deb && \
+    apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main' && \
+    apt-get update && \
+    apt-get install -y wget iputils-ping dnsutils zulu-8 zulu-13 zip ubzip git openssh-client && \
     # https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#dkl-di-0005
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/lib/apt/lists/*
