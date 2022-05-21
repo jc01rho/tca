@@ -1,5 +1,8 @@
 FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.3-linux-sudo
 
+
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Seoul
 USER root
 
 
@@ -9,12 +12,19 @@ RUN apt-get update && apt-get install -y software-properties-common gnupg curl &
     rm ./zulu-repo_1.0.0-3_all.deb && \
     apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main' && \
     apt-get update && \
-    apt-get install -y wget iputils-ping dnsutils zulu-8 zulu-13 zip unzip git openssh-client && \
+    apt-get install -y wget iputils-ping dnsutils zulu-8 zulu-13 zip unzip git openssh-client jq tzdata bash && \
     # https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#dkl-di-0005
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/lib/apt/lists/*
 
-RUN bash -c 'echo "DOCKER_OPTS=\"--insecure-registry 192.168.11.124:8082 --insecure-registry 192.168.11.124:8099  --insecure-registry sparrow-harbor.fasoo.com:32023 \"" >> /etc/default/docker'
+# RUN bash -c 'echo "DOCKER_OPTS=\"--insecure-registry 192.168.11.124:8082 --insecure-registry 192.168.11.124:8099  --insecure-registry sparrow-harbor.fasoo.com:32023 \"" >> /etc/default/docker'
+
+RUN mkdir -p /etc/docker; cd /etc/docker; echo ' {\n\ 
+        "insecure-registries" : [ "192.168.11.124:8082","192.168.11.124:8099","http://sparrow-harbor.fasoo.com:32023" ], \n\
+         \n\
+}'  > daemon.json
+
+
 RUN git config --global core.symlinks false ; chown root:root /usr/bin/sudo && chmod 4755 /usr/bin/sudo; chown root:root /usr/lib/sudo/sudoers.so; chown root:root /etc/sudoers; exit 0
 
 USER buildagent
@@ -111,8 +121,9 @@ RUN mkdir ~/.docker; cd ~/.docker; echo ' {\n\
         }\n\ 
 }'  > config.json
 
-RUN mkdir ~/.ssh
-ADD ssh.tar ~/.ssh
-
+RUN mkdir ~/.ssh; cd ~/.ssh; echo 'KexAlgorithms +diffie-hellman-group1-sha1\n\n\
+Host *\n\
+    StrictHostKeyChecking no' > config
+ADD --chown=buildagent:buildagent ssh.tar /home/buildagent/.ssh
 
 

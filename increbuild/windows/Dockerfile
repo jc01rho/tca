@@ -110,8 +110,7 @@ RUN choco feature enable -n=allowGlobalConfirmation
 RUN choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progress
 
 
-COPY LLVM32/ C:/LLVM32/
-COPY boost160_x86/ C:/boost160_x86/
+
 
 RUN choco install maven
 
@@ -145,6 +144,12 @@ RUN `
 	# && (start /w sdksetup.exe /features + /q /norestart) `
 	# && del /q sdksetup.exe 
 
+
+
+COPY LLVM32/ C:/LLVM32/
+COPY boost160_x86/ C:/boost160_x86/
+COPY LLVM64/ C:/LLVM64/
+COPY boost160_x64/ C:/boost160_x64/
 
 
 COPY entrypoint.cmd "c:\\"
