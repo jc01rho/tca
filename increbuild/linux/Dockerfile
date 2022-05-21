@@ -20,7 +20,7 @@ RUN apt-get update && apt-get install -y software-properties-common gnupg curl &
 # RUN bash -c 'echo "DOCKER_OPTS=\"--insecure-registry 192.168.11.124:8082 --insecure-registry 192.168.11.124:8099  --insecure-registry sparrow-harbor.fasoo.com:32023 \"" >> /etc/default/docker'
 
 RUN mkdir -p /etc/docker; cd /etc/docker; echo ' {\n\ 
-        "insecure-registries" : [ "192.168.11.124:8082","192.168.11.124:8099","http://sparrow-harbor.fasoo.com:32023" ], \n\
+        "insecure-registries" : [ "192.168.11.124:8082","192.168.11.124:8099","http://sparrow-harbor.fasoo.com:32023" ] \n\
          \n\
 }'  > daemon.json
 
