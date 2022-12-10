@@ -6,21 +6,28 @@ ENV TZ=Asia/Seoul
 USER root
 
 
-RUN apt-get update && apt-get install -y software-properties-common gnupg curl && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9 && \
+RUN apt-get update && apt-get install -y software-properties-common gnupg curl lsb-release && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
+    mkdir -p /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    apt-get update && apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin && \
     curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb && \
     apt-get install ./zulu-repo_1.0.0-3_all.deb && \
     rm ./zulu-repo_1.0.0-3_all.deb && \
-    apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main' && \
+   #  apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main' && \
     apt-get update && \
-    apt-get install -y wget iputils-ping dnsutils zulu-8 zulu-13 zip unzip git openssh-client jq tzdata bash && \
-    # https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#dkl-di-0005
+    apt-get install -y wget zulu8-ca zulu13-ca zip unzip git openssh-client jq tzdata bash  python3 python3-pip python3-dev ; apt-get install -y zulu17-ca ; \
+    cd /usr/local/bin && \
+    ln -s /usr/bin/python3 python && \
+    pip3 install --upgrade pip setuptools && \
     apt-get clean && rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/lib/apt/lists/*
+    # https://github.com/goodwithtech/dockle/blob/master/CHECKPOINT.md#dkl-di-0005
 
 # RUN bash -c 'echo "DOCKER_OPTS=\"--insecure-registry 192.168.11.124:8082 --insecure-registry 192.168.11.124:8099  --insecure-registry sparrow-harbor.fasoo.com:32023 \"" >> /etc/default/docker'
 
 RUN mkdir -p /etc/docker; cd /etc/docker; echo ' {\n\ 
-        "insecure-registries" : [ "192.168.11.124:8082","192.168.11.124:8099","http://sparrow-harbor.fasoo.com:32023" ] \n\
+        "insecure-registries" : [ "192.168.11.124:8082","192.168.11.124:8099","sparrow-harbor.fasoo.com:32023" ],\n\
+        "builder": {"Entitlements": {"security-insecure": true }} \n\
          \n\
 }'  > daemon.json
 
@@ -110,6 +117,9 @@ RUN cd /usr/local/bin; sudo curl -LO https://dl.k8s.io/release/v1.21.4/bin/linux
 RUN mkdir ~/.docker; cd ~/.docker; echo ' {\n\ 
         "auths": {\n\ 
                 "sparrow-harbor.fasoo.com:32023": { \n\
+                        "auth": "cm9ib3QkdGVhbWNpdHlfYWdlbnQ6eWEzS2E4aGVBWkgwbm5GaGVoSEQ0cm5kaXpIamZ3dzg=" \n\
+                }, \n\
+                "http://sparrow-harbor.fasoo.com:32023": { \n\
                         "auth": "cm9ib3QkdGVhbWNpdHlfYWdlbnQ6eWEzS2E4aGVBWkgwbm5GaGVoSEQ0cm5kaXpIamZ3dzg=" \n\
                 }, \n\
                 "192.168.11.124:8099": {\n\ 

@@ -1,4 +1,4 @@
-FROM sparrow-harbor.fasoo.com:32023/mirror/gocd/gocd-agent-docker-dind:v22.1.0
+FROM sparrow-harbor.fasoo.com:32023/mirror/gocd/gocd-agent-docker-dind:v22.3.0
 
 
 USER root
@@ -7,7 +7,8 @@ RUN apk --no-cache add tzdata && \
 	echo "Asia/Seoul" > /etc/timezone \
 	apk del tzdata
 # begin - kubectl
-RUN apk update && apk add curl git jq unzip sudo
+RUN apk update && apk add --no-cache --update curl git jq unzip sudo  python3 py3-pip coreutils
+
 RUN curl -LO https://dl.k8s.io/release/v1.21.4/bin/linux/amd64/kubectl ; chmod 777 kubectl && mv kubectl /bin/kubectl
 RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash  ; 
 # end - kubectl
