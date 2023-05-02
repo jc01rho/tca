@@ -1,4 +1,4 @@
-FROM sparrow-harbor.fasoo.com:32023/mirror/gocd/gocd-agent-docker-dind:v22.3.0
+FROM sparrow-harbor.fasoo.com:32023/mirror/gocd/gocd-agent-docker-dind:v23.1.0
 
 
 USER root
@@ -15,7 +15,7 @@ RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | b
 
 
 USER go
-RUN cd ~ ; docker login -u 'robot$teamcity_agent' -p "ya3Ka8heAZH0nnFhehHD4rndizHjfww8" sparrow-harbor.fasoo.com:32023 ;helm repo add sparrow-infra http://sparrow-harbor.fasoo.com:32023/chartrepo/infra
+RUN cd ~ ; docker login -u 'robot$teamcity_agent' -p "ya3Ka8heAZH0nnFhehHD4rndizHjfww8" sparrow-harbor.fasoo.com:32023 ;helm repo add sparrow-infra http://sparrow-nexus.fasoo.com:8081/repository/sparrow-helm/ --username admin --password 1234
 # ADD config ~/.kube/config
 ADD config /home/go/.kube/config
 USER root

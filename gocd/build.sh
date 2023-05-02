@@ -23,7 +23,7 @@
 docker build -f linux/Dockerfile -t sparrow-harbor.fasoo.com:32023/infra/gocd-agent:latest .
 
 
-docker login -u admin -p 1234 sparrow-harbor.fasoo.com:32023
+docker login -u 'robot$teamcity_agent' -p "ya3Ka8heAZH0nnFhehHD4rndizHjfww8" sparrow-harbor.fasoo.com:32023
 
 docker push sparrow-harbor.fasoo.com:32023/infra/gocd-agent:latest
 

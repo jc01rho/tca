@@ -1,21 +1,28 @@
+
 FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.3-linux-sudo
 
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG DEBCONF_NOWARNINGS="yes"
+ENV DOCKER_CLI_EXPERIMENTAL=enabled
+ENV DOCKER_BUILDKIT=0
 ENV TZ=Asia/Seoul
 USER root
 
 
-RUN apt-get update && apt-get install -y software-properties-common gnupg curl lsb-release && apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
-    mkdir -p /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
+RUN apt-get remove docker docker-engine docker.io containerd runc && apt-get update  && apt-get install  --no-install-recommends  --no-install-suggests -y ca-certificates curl gnupg apt-utils aptitude &&  apt-get install  --no-install-recommends  --no-install-suggests -y  software-properties-common curl lsb-release &&  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
+    mkdir -m 0755 -p /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-    apt-get update && apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin && \
+    echo "install docker-ce docker-ce-cli containerd.io docker-compose-plugin" && \
+    chmod a+r /etc/apt/keyrings/docker.gpg && apt-get update && apt-get install  --no-install-recommends  --no-install-suggests  -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin aufs-tools cgroupfs-mount cgroup-lite && \
     curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb && \
-    apt-get install ./zulu-repo_1.0.0-3_all.deb && \
+    echo "install ./zulu-repo_1.0.0-3_all.deb" && \
+    apt-get install  --no-install-recommends  --no-install-suggests  -y ./zulu-repo_1.0.0-3_all.deb && \
     rm ./zulu-repo_1.0.0-3_all.deb && \
    #  apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main' && \
     apt-get update && \
-    apt-get install -y wget zulu8-ca zulu13-ca zip unzip git openssh-client jq tzdata bash  python3 python3-pip python3-dev ; apt-get install -y zulu17-ca ; \
+    echo "install zulu8-ca zulu13-ca zip unzip git openssh-client jq tzdata bash  python3 python3-pip python3-dev" && \
+    apt-get install  --no-install-recommends  --no-install-suggests  -y wget zulu8-ca zulu13-ca zip unzip git openssh-client jq tzdata bash  python3 python3-pip python3-dev binutils keychain binfmt-support build-essential; apt-get install  --no-install-recommends  --no-install-suggests  -y zulu17-ca ; \
     cd /usr/local/bin && \
     ln -s /usr/bin/python3 python && \
     pip3 install --upgrade pip setuptools && \
@@ -26,7 +33,8 @@ RUN apt-get update && apt-get install -y software-properties-common gnupg curl l
 # RUN bash -c 'echo "DOCKER_OPTS=\"--insecure-registry 192.168.11.124:8082 --insecure-registry 192.168.11.124:8099  --insecure-registry sparrow-harbor.fasoo.com:32023 \"" >> /etc/default/docker'
 
 RUN mkdir -p /etc/docker; cd /etc/docker; echo ' {\n\ 
-        "insecure-registries" : [ "192.168.11.124:8082","192.168.11.124:8099","sparrow-harbor.fasoo.com:32023" ],\n\
+        "insecure-registries" : [ "192.168.11.124:8082","192.168.11.124:8099","sparrow-harbor.fasoo.com:32023" ], \n\
+        "experimental": true, \n\
         "builder": {"Entitlements": {"security-insecure": true }} \n\
          \n\
 }'  > daemon.json
@@ -110,17 +118,24 @@ RUN git config --global core.symlinks false ; mkdir ~/.m2; cd ~/.m2; echo '<?xml
      </activeProfiles>\n\ 
   </settings>' > settings.xml
 #2021.1.4-linux-sudo-3
-RUN cd /usr/local/bin; sudo curl -LO https://dl.k8s.io/release/v1.21.4/bin/linux/amd64/kubectl ;sudo chmod +x kubectl ; cd ~ ;curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash ; helm plugin install https://github.com/chartmuseum/helm-push  ; helm repo add sparrow-infra http://sparrow-harbor.fasoo.com:32023/chartrepo/infra
+RUN cd /usr/local/bin; sudo curl -LO https://dl.k8s.io/release/v1.21.4/bin/linux/amd64/kubectl ;sudo chmod +x kubectl ; cd ~ ;curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash ; helm plugin install https://github.com/chartmuseum/helm-push  ; helm repo add sparrow-infra http://sparrow-nexus.fasoo.com:8081/repository/sparrow-helm/ --username admin --password 1234
 #2021.1.4-linux-sudo-4
 #RUN docker login -u 'robot$teamcity' -p "CYUnhdZeCWBuXcGeSBRwiRXPfZIkcylC" sparrow-harbor.fasoo.com:32023
+
+
+ADD config.kube /home/buildagent/.kube/config
+RUN ls ~/.kube ; ls /home/buildagent/.kube ; sudo chown -R buildagent /home/buildagent/.kube; sudo chmod -R 700 /home/buildagent/.kube/
+
+
+
 
 RUN mkdir ~/.docker; cd ~/.docker; echo ' {\n\ 
         "auths": {\n\ 
                 "sparrow-harbor.fasoo.com:32023": { \n\
-                        "auth": "cm9ib3QkdGVhbWNpdHlfYWdlbnQ6eWEzS2E4aGVBWkgwbm5GaGVoSEQ0cm5kaXpIamZ3dzg=" \n\
+                        "auth": "YWRtaW46MTIzNA==" \n\
                 }, \n\
                 "http://sparrow-harbor.fasoo.com:32023": { \n\
-                        "auth": "cm9ib3QkdGVhbWNpdHlfYWdlbnQ6eWEzS2E4aGVBWkgwbm5GaGVoSEQ0cm5kaXpIamZ3dzg=" \n\
+                        "auth": "YWRtaW46MTIzNA==" \n\
                 }, \n\
                 "192.168.11.124:8099": {\n\ 
                         "auth": "c2FzdDpzYXN0"\n\ 
@@ -135,5 +150,7 @@ RUN mkdir ~/.ssh; cd ~/.ssh; echo 'KexAlgorithms +diffie-hellman-group1-sha1\n\n
 Host *\n\
     StrictHostKeyChecking no' > config
 ADD --chown=buildagent:buildagent ssh.tar /home/buildagent/.ssh
+
+RUN git config --global --add safe.directory /opt/buildagent/work
 
 
