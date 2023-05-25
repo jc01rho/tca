@@ -34,6 +34,7 @@ RUN apt-get remove docker docker-engine docker.io containerd runc && apt-get upd
 
 RUN mkdir -p /etc/docker; cd /etc/docker; echo ' {\n\ 
         "insecure-registries" : [ "192.168.11.124:8082","192.168.11.124:8099","sparrow-harbor.fasoo.com:32023" ], \n\
+        "registry-mirrors": ["http://sparrow-harbor.fasoo.com:30780","https://mirror.gcr.io"], \n\
         "experimental": true, \n\
         "builder": {"Entitlements": {"security-insecure": true }} \n\
          \n\
