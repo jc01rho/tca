@@ -2,13 +2,19 @@
 FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.3-linux-sudo
 
 
+
+USER root
 ARG DEBIAN_FRONTEND=noninteractive
+RUN echo "Acquire::http::Pipeline-Depth 0;"   >>/etc/apt/apt.conf.d/99fixbadproxy
+RUN echo "Acquire::http::No-Cache true;"   >>/etc/apt/apt.conf.d/99fixbadproxy
+RUN echo "Acquire::BrokenProxy    true;"   >>/etc/apt/apt.conf.d/99fixbadproxy
+RUN sed -i 's#archive.ubuntu.com#sparrow-nexus.fasoo.com:8081/repository/apt#g' /etc/apt/sources.list
+RUN sed -i 's#mirror.ubuntu.com#sparrow-nexus.fasoo.com:8081/repository/apt#g' /etc/apt/sources.list
+RUN sed -i 's#security.ubuntu.com#sparrow-nexus.fasoo.com:8081/repository/apt#g' /etc/apt/sources.list
 ARG DEBCONF_NOWARNINGS="yes"
 ENV DOCKER_CLI_EXPERIMENTAL=enabled
 ENV DOCKER_BUILDKIT=0
 ENV TZ=Asia/Seoul
-USER root
-
 
 RUN apt-get remove docker docker-engine docker.io containerd runc && apt-get update  && apt-get install  --no-install-recommends  --no-install-suggests -y ca-certificates curl gnupg apt-utils aptitude &&  apt-get install  --no-install-recommends  --no-install-suggests -y  software-properties-common curl lsb-release &&  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
     mkdir -m 0755 -p /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
@@ -22,7 +28,7 @@ RUN apt-get remove docker docker-engine docker.io containerd runc && apt-get upd
    #  apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main' && \
     apt-get update && \
     echo "install zulu8-ca zulu13-ca zip unzip git openssh-client jq tzdata bash  python3 python3-pip python3-dev" && \
-    apt-get install  --no-install-recommends  --no-install-suggests  -y wget zulu8-ca zulu13-ca zip unzip git openssh-client jq tzdata bash  python3 python3-pip python3-dev binutils keychain binfmt-support build-essential; apt-get install  --no-install-recommends  --no-install-suggests  -y zulu17-ca ; \
+    apt-get install  --no-install-recommends  --no-install-suggests  -y wget zulu8-ca zulu11-ca zulu13-ca zip unzip git openssh-client jq tzdata bash  python3 python3-pip python3-dev binutils keychain binfmt-support build-essential; apt-get install  --no-install-recommends  --no-install-suggests  -y zulu17-ca ; \
     cd /usr/local/bin && \
     ln -s /usr/bin/python3 python && \
     pip3 install --upgrade pip setuptools && \
@@ -36,7 +42,9 @@ RUN mkdir -p /etc/docker; cd /etc/docker; echo ' {\n\
         "insecure-registries" : [ "192.168.11.124:8082","192.168.11.124:8099","sparrow-harbor.fasoo.com:32023" ], \n\
         "registry-mirrors": ["http://sparrow-harbor.fasoo.com:30780","https://mirror.gcr.io"], \n\
         "experimental": true, \n\
-        "builder": {"Entitlements": {"security-insecure": true }} \n\
+        "builder": {"Entitlements": {"security-insecure": true }}, \n\
+        "cgroup-parent": "docker.slice", \n\
+        "features": { "buildkit": true } \n\
          \n\
 }'  > daemon.json
 
@@ -44,6 +52,7 @@ RUN mkdir -p /etc/docker; cd /etc/docker; echo ' {\n\
 RUN git config --global core.symlinks false ; chown root:root /usr/bin/sudo && chmod 4755 /usr/bin/sudo; chown root:root /usr/lib/sudo/sudoers.so; chown root:root /etc/sudoers; exit 0
 
 USER buildagent
+# RUN sed -i "s#FJ_MIN_UNSUPPORTED_JAVA_VERSION=12#FJ_MIN_UNSUPPORTED_JAVA_VERSION=18#g" /opt/buildagent/bin/agent.sh
 
 RUN git config --global core.symlinks false ; mkdir ~/.m2; cd ~/.m2; echo '<?xml version="1.0" encoding="UTF-8"?>\n\ 
   <settings xmlns="http://maven.apache.org/SETTINGS/1.1.0"\n\ 
