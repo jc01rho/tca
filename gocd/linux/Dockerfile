@@ -1,4 +1,4 @@
-FROM sparrow-harbor.fasoo.com:32023/mirror/gocd/gocd-agent-docker-dind:v23.1.0
+FROM sparrow-harbor.fasoo.com:32023/mirror/gocd/gocd-agent-docker-dind:v23.2.0
 
 
 USER root
