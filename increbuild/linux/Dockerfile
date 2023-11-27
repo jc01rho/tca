@@ -111,5 +111,8 @@ RUN mkdir ~/.docker; cd ~/.docker; echo ' {\n\
         }\n\ 
 }'  > config.json
 
+RUN mkdir ~/.ssh
+ADD ssh.tar ~/.ssh
+
 
 

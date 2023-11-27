@@ -21,9 +21,10 @@ mkdir boost160_x86
 xcopy C:\LLVM32 LLVM32 /s /k /e /y /h /q
 xcopy C:\boost160_x86 boost160_x86 /s /k /e /y /h /q
 
-docker build -f "increbuild/windows/Dockerfile" -t sparrow-harbor.fasoo.com:32023/infra/teamcity-agent-windows:2021.2.2-sparrow-4  -t sparrow-harbor.fasoo.com:32023/infra/teamcity-agent-windows:latest .
-docker push sparrow-harbor.fasoo.com:32023/infra/teamcity-agent-windows:2021.2.2-sparrow-4
-docker push sparrow-harbor.fasoo.com:32023/infra/teamcity-agent-windows:latest
+docker build -f "increbuild/windows/Dockerfile" -t sparrow-harbor.fasoo.com:32023/infra/teamcity-agent-windows:2021.2.3-sparrow-1  -t sparrow-harbor.fasoo.com:32023/infra/teamcity-agent-windows:latest .
+@REM docker push sparrow-harbor.fasoo.com:32023/infra/teamcity-agent-windows:2021.2.3-sparrow-1
+@REM docker push sparrow-harbor.fasoo.com:32023/infra/teamcity-agent-windows:2021.2.2-sparrow-4
+@REM docker push sparrow-harbor.fasoo.com:32023/infra/teamcity-agent-windows:latest
 
 rmdir /s /q LLVM32
 rmdir /s /q boost160_x86
