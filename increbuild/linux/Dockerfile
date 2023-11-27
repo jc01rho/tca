@@ -138,13 +138,13 @@ ADD config.kube /home/buildagent/.kube/config
 RUN ls ~/.kube ; ls /home/buildagent/.kube ; sudo chown -R buildagent /home/buildagent/.kube; sudo chmod -R 700 /home/buildagent/.kube/
 
 # AWS CLI 설치
-RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; unzip awscliv2.zip; sudo ./aws/install --update ; rm -rf awscliv2.zip;
+RUN cd ~ ; curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; unzip awscliv2.zip; sudo ./aws/install --update ; rm -rf awscliv2.zip;
 
 # Terraform 설치 스크립트
   # Terraform 다운로드 및 압축 해제
   # 실행 가능한 파일로 이동
   # 설치된 Terraform 버전 확인
-RUN TERRAFORM_VERSION="1.6.4"; TERRAFORM_URL="https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"; curl -O ${TERRAFORM_URL}; unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip; sudo mv terraform /usr/local/bin/; terraform version ; rm -rf terraform_${TERRAFORM_VERSION}_linux_amd64.zip;
+RUN TERRAFORM_VERSION="1.6.4"; TERRAFORM_URL="https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"; cd ~ ; curl -O ${TERRAFORM_URL}; unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip; sudo mv terraform /usr/local/bin/; terraform version ; rm -rf terraform_${TERRAFORM_VERSION}_linux_amd64.zip;
 
 # JQ 설치 - 상위 라인32 에서 이미 해결됨
 # RUN sudo apt-get update; sudo apt-get install jq
