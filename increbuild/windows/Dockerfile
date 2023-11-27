@@ -114,9 +114,11 @@ RUN choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' -y --no-progres
 
 RUN choco install maven
 
+
+
+
+
 SHELL ["cmd", "/S", "/C"]
-
-
 RUN `
     # Download the Build Tools bootstrapper.
     curl -SL --output vs_buildtools.exe https://aka.ms/vs/15/release/vs_buildtools.exe   & `
@@ -128,9 +130,9 @@ RUN `
     #     # --installChannelUri C:\TEMP\VisualStudio.chman `
 	# 	# --includeRecommended `
 	# & 하나로 바꿔서 빌드 되는지 확인하고, java 압축해제 및 path 등록 스크립트화 해서 다시 빌드해보기
-	powershell cmd /c start /w vs_buildtools.exe --quiet --wait --norestart --nocache & `
-    start /w vs_buildtools.exe --quiet --wait --norestart --nocache & `
-	start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify  --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\BuildTools"  --add Microsoft.VisualStudio.Workload.VCTools  --add Microsoft.Component.MSBuild  --add Microsoft.VisualStudio.Component.VC.140  --add Microsoft.VisualStudio.Component.VC.CLI.Support  --add Microsoft.VisualStudio.Component.VC.ATL  --add Microsoft.VisualStudio.Component.VC.ATLMFC  --add Microsoft.VisualStudio.Component.Windows81SDK  --includeRecommended 
+	# powershell cmd /c start /w vs_buildtools.exe --quiet --wait --norestart --nocache & `
+    # start /w vs_buildtools.exe --quiet --wait --norestart --nocache & `
+	# start /w vs_buildtools.exe --quiet --wait --norestart --nocache modify  --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\BuildTools"  --add Microsoft.VisualStudio.Workload.VCTools  --add Microsoft.Component.MSBuild  --add Microsoft.VisualStudio.Component.VC.140  --add Microsoft.VisualStudio.Component.VC.CLI.Support  --add Microsoft.VisualStudio.Component.VC.ATL  --add Microsoft.VisualStudio.Component.VC.ATLMFC  --add Microsoft.VisualStudio.Component.Windows81SDK  --includeRecommended 
     #     --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2017\BuildTools" `
     #     --add Microsoft.VisualStudio.Workload.VCTools `
 	# 	--add Microsoft.Component.MSBuild `
@@ -146,6 +148,22 @@ RUN `
 
 
 
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+RUN `
+	$VSId = Start-Process ".\vs_buildtools.exe" -ArgumentList "--wait --quiet --norestart --nocache install --add Microsoft.VisualStudio.Workload.VCTools  --add Microsoft.Component.MSBuild  --add Microsoft.VisualStudio.Component.VC.140  --add Microsoft.VisualStudio.Component.VC.CLI.Support  --add Microsoft.VisualStudio.Component.VC.ATL  --add Microsoft.VisualStudio.Component.VC.ATLMFC  --add Microsoft.VisualStudio.Component.Windows81SDK  --includeRecommended" -NoNewWindow -PassThru ;`
+	$VSId.WaitForExit() ;`
+	$setupIds = (Get-Process -name "setup" -ErrorAction SilentlyContinue).id ;`
+	foreach ($id in $setupIds)  `
+	{  `
+		Wait-Process -Id $id -ErrorAction SilentlyContinue `
+	} `;
+	Remove-Item "vs_buildtools.exe" ;	`
+	Expand-Archive c:\java_1.8.zip -DestinationPath "C:\Program Files\Java\13" ;`
+	Expand-Archive c:\java_13.zip -DestinationPath "C:\Program Files\Java\1.8" ;
+
+
+
+SHELL ["cmd", "/S", "/C"]
 COPY LLVM32/ C:/LLVM32/
 COPY boost160_x86/ C:/boost160_x86/
 COPY LLVM64/ C:/LLVM64/
@@ -153,6 +171,8 @@ COPY boost160_x64/ C:/boost160_x64/
 
 
 COPY entrypoint.cmd "c:\\"
+RUN git config --system core.longpaths true
+
 # RUN `
 # 	curl -SL --output vs_buildtools.exe https://aka.ms/vs/15/release/vs_buildtools.exe  && `
 # 	start /w vs_buildtools.exe --quiet --wait --norestart --nocache
