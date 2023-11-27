@@ -122,8 +122,8 @@ SHELL ["cmd", "/S", "/C"]
 RUN `
     # Download the Build Tools bootstrapper.
     curl -SL --output vs_buildtools.exe https://aka.ms/vs/15/release/vs_buildtools.exe   & `
-	curl -SL --output java_1.8.zip https://cdn.azul.com/zulu/bin/zulu8.60.0.21-ca-jdk8.0.322-win_x64.zip & ` 
-	curl -SL --output java_13.zip https://cdn.azul.com/zulu/bin/zulu13.46.15-ca-jdk13.0.10-win_x64.zip & `
+	curl -SL --output java_1.8.zip https://cdn.azul.com/zulu/bin/zulu8.60.0.21-ca-jdk8.0.322-win_x64.zip  & `
+	curl -SL --output java_13.zip https://cdn.azul.com/zulu/bin/zulu13.46.15-ca-jdk13.0.10-win_x64.zip 
     # `
     # # Install Build Tools with the Microsoft.VisualStudio.Workload.AzureBuildTools workload, excluding workloads and components with known issues.
 	# 	# --channelUri C:\TEMP\VisualStudio.chman `
@@ -147,25 +147,18 @@ RUN `
 	# && del /q sdksetup.exe 
 
 
-
+COPY windows-vs-install.ps1 C:/
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+RUN powershell .\windows-vs-install.ps1
 RUN `
-	$VSId = Start-Process ".\vs_buildtools.exe" -ArgumentList "--wait --quiet --norestart --nocache install --add Microsoft.VisualStudio.Workload.VCTools  --add Microsoft.Component.MSBuild  --add Microsoft.VisualStudio.Component.VC.140  --add Microsoft.VisualStudio.Component.VC.CLI.Support  --add Microsoft.VisualStudio.Component.VC.ATL  --add Microsoft.VisualStudio.Component.VC.ATLMFC  --add Microsoft.VisualStudio.Component.Windows81SDK  --includeRecommended" -NoNewWindow -PassThru ;`
-	$VSId.WaitForExit() ;`
-	$setupIds = (Get-Process -name "setup" -ErrorAction SilentlyContinue).id ;`
-	foreach ($id in $setupIds)  `
-	{  `
-		Wait-Process -Id $id -ErrorAction SilentlyContinue `
-	} `;
-	Remove-Item "vs_buildtools.exe" ;	`
-	Expand-Archive c:\java_1.8.zip -DestinationPath "C:\Program Files\Java\13" ;`
-	Expand-Archive c:\java_13.zip -DestinationPath "C:\Program Files\Java\1.8" ;
+	Expand-Archive c:\java_1.8.zip -DestinationPath 'C:\Program Files\Java\1.8' ; `
+	Expand-Archive c:\java_13.zip -DestinationPath 'C:\Program Files\Java\13' ;
 
 
 
 SHELL ["cmd", "/S", "/C"]
-COPY LLVM32/ C:/LLVM32/
-COPY boost160_x86/ C:/boost160_x86/
+# COPY LLVM32/ C:/LLVM32/
+# COPY boost160_x86/ C:/boost160_x86/
 COPY LLVM64/ C:/LLVM64/
 COPY boost160_x64/ C:/boost160_x64/
 
