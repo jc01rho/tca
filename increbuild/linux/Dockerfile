@@ -16,11 +16,12 @@ ENV DOCKER_CLI_EXPERIMENTAL=enabled
 ENV DOCKER_BUILDKIT=0
 ENV TZ=Asia/Seoul
 
-RUN apt-get remove docker docker-engine docker.io containerd runc && apt-get update  && apt-get install  --no-install-recommends  --no-install-suggests -y ca-certificates curl gnupg apt-utils aptitude &&  apt-get install  --no-install-recommends  --no-install-suggests -y  software-properties-common curl lsb-release &&  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
-    mkdir -m 0755 -p /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && \
+RUN apt-get remove docker docker-engine docker.io containerd runc && echo "update" ;  apt-get update  ; echo" install" ; apt-get install  --no-install-recommends  --no-install-suggests -y ca-certificates curl gnupg apt-utils aptitude &&  apt-get install  --no-install-recommends  --no-install-suggests -y  software-properties-common curl lsb-release &&  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
+    mkdir -m 0755 -p /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && echo "wget" && wget -qO - https://package.perforce.com/perforce.pubkey | gpg --dearmor | sudo tee /etc/apt/keyrings/perforce.gpg  && echo "Tee" && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/perforce.gpg] https://package.perforce.com/apt/ubuntu $(lsb_release -cs) release" | tee /etc/apt/sources.list.d/perfoce.list > /dev/null && \
     echo "install docker-ce docker-ce-cli containerd.io docker-compose-plugin" && \
-    chmod a+r /etc/apt/keyrings/docker.gpg && apt-get update && apt-get install  --no-install-recommends  --no-install-suggests  -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin aufs-tools cgroupfs-mount cgroup-lite && \
+    chmod a+r /etc/apt/keyrings/docker.gpg && chmod a+r /etc/apt/keyrings/perforce.gpg && apt-get update && apt-get install  --no-install-recommends  --no-install-suggests  -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin aufs-tools cgroupfs-mount cgroup-lite && \
     curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb && \
     echo "install ./zulu-repo_1.0.0-3_all.deb" && \
     apt-get install  --no-install-recommends  --no-install-suggests  -y ./zulu-repo_1.0.0-3_all.deb && \
@@ -136,8 +137,17 @@ RUN cd /usr/local/bin; sudo curl -LO https://dl.k8s.io/release/v1.21.4/bin/linux
 ADD config.kube /home/buildagent/.kube/config
 RUN ls ~/.kube ; ls /home/buildagent/.kube ; sudo chown -R buildagent /home/buildagent/.kube; sudo chmod -R 700 /home/buildagent/.kube/
 
+# AWS CLI 설치
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; unzip awscliv2.zip; sudo ./aws/install --update ; rm -rf awscliv2.zip;
 
+# Terraform 설치 스크립트
+  # Terraform 다운로드 및 압축 해제
+  # 실행 가능한 파일로 이동
+  # 설치된 Terraform 버전 확인
+RUN TERRAFORM_VERSION="1.6.4"; TERRAFORM_URL="https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip"; curl -O ${TERRAFORM_URL}; unzip terraform_${TERRAFORM_VERSION}_linux_amd64.zip; sudo mv terraform /usr/local/bin/; terraform version ; rm -rf terraform_${TERRAFORM_VERSION}_linux_amd64.zip;
 
+# JQ 설치 - 상위 라인32 에서 이미 해결됨
+# RUN sudo apt-get update; sudo apt-get install jq
 
 RUN mkdir ~/.docker; cd ~/.docker; echo ' {\n\ 
         "auths": {\n\ 
