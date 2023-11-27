@@ -17,11 +17,10 @@ ENV DOCKER_BUILDKIT=0
 ENV TZ=Asia/Seoul
 
 RUN apt-get remove docker docker-engine docker.io containerd runc && echo "update" ;  apt-get update  ; echo" install" ; apt-get install  --no-install-recommends  --no-install-suggests -y ca-certificates curl gnupg apt-utils aptitude &&  apt-get install  --no-install-recommends  --no-install-suggests -y  software-properties-common curl lsb-release &&  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
-    mkdir -m 0755 -p /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && echo "wget" && wget -qO - https://package.perforce.com/perforce.pubkey | gpg --dearmor | sudo tee /etc/apt/keyrings/perforce.gpg  && echo "Tee" && \
+    mkdir -m 0755 -p /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
-    echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/perforce.gpg] https://package.perforce.com/apt/ubuntu $(lsb_release -cs) release" | tee /etc/apt/sources.list.d/perfoce.list > /dev/null && \
     echo "install docker-ce docker-ce-cli containerd.io docker-compose-plugin" && \
-    chmod a+r /etc/apt/keyrings/docker.gpg && chmod a+r /etc/apt/keyrings/perforce.gpg && apt-get update && apt-get install  --no-install-recommends  --no-install-suggests  -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin aufs-tools cgroupfs-mount cgroup-lite && \
+    chmod a+r /etc/apt/keyrings/docker.gpg && apt-get update && apt-get install  --no-install-recommends  --no-install-suggests  -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin aufs-tools cgroupfs-mount cgroup-lite && \
     curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb && \
     echo "install ./zulu-repo_1.0.0-3_all.deb" && \
     apt-get install  --no-install-recommends  --no-install-suggests  -y ./zulu-repo_1.0.0-3_all.deb && \
