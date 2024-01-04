@@ -171,6 +171,7 @@ Host *\n\
     StrictHostKeyChecking no' > config
 ADD --chown=buildagent:buildagent ssh.tar /home/buildagent/.ssh
 
-RUN git config --global --add safe.directory /opt/buildagent/work
-
+# RUN git config --global --add safe.directory /opt/buildagent/work
+RUN git config --global --add safe.directory '*'
+RUN git config --system --add safe.directory '*'
 
