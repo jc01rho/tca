@@ -52,7 +52,12 @@ RUN mkdir -p /etc/docker; cd /etc/docker; echo ' {\n\
 
 RUN git config --global core.symlinks false ; chown root:root /usr/bin/sudo && chmod 4755 /usr/bin/sudo; chown root:root /usr/lib/sudo/sudoers.so; chown root:root /etc/sudoers; exit 0
 
-RUN cd /usr/local/share/ca-certificates/; curl --insecure -O https://nexus.sparrow.local/repository/sparrow/infra/rootca.crt; update-ca-certificates
+RUN cd /usr/local/share/ca-certificates/; \
+      curl --insecure -O https://nexus.sparrow.local/repository/sparrow/infra/rootca.crt; \
+      /usr/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      /opt/java/openjdk/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      update-ca-certificates
+
 RUN git config --system --add safe.directory '*'
 
 USER buildagent
