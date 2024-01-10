@@ -56,6 +56,11 @@ RUN cd /usr/local/share/ca-certificates/; \
       curl --insecure -O https://nexus.sparrow.local/repository/sparrow/infra/rootca.crt; \
       /usr/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
       /opt/java/openjdk/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      /usr/lib/jvm/zulu11-ca-amd64/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      /usr/lib/jvm/zulu13-ca-amd64/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      /usr/lib/jvm/zulu17-ca-amd64/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      /usr/lib/jvm/zulu19-ca-amd64/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      /usr/lib/jvm/zulu8-ca-amd64/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
       update-ca-certificates
 
 RUN git config --system --add safe.directory '*'
