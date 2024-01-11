@@ -22,6 +22,11 @@ RUN mkdir -p /etc/docker; cd /etc/docker; echo -e '{ \n\
 
 
 
+RUN cd /usr/local/share/ca-certificates/; \
+      curl --insecure -O https://nexus.sparrow.local/repository/sparrow/infra/rootca.crt; \
+      /usr/local/share/ca-certificates
+
+
 USER go
 RUN cd ~ ; docker login -u 'robot$teamcity_agent' -p "ya3Ka8heAZH0nnFhehHD4rndizHjfww8" sparrow-harbor.fasoo.com:32023 ;helm repo add sparrow-infra http://sparrow-nexus.fasoo.com:8081/repository/sparrow-helm/ --username admin --password 1234
 # ADD config ~/.kube/config
