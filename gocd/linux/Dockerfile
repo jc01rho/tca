@@ -30,7 +30,7 @@ RUN cd /usr/local/share/ca-certificates/; \
 USER go
 RUN cd ~ ; docker login -u 'robot$teamcity_agent' -p "ya3Ka8heAZH0nnFhehHD4rndizHjfww8" sparrow-harbor.fasoo.com:32023 ;helm repo add sparrow-infra http://sparrow-nexus.fasoo.com:8081/repository/sparrow-helm/ --username admin --password 1234
 # ADD config ~/.kube/config
-ADD config /home/go/.kube/config
+ADD config.kube /home/go/.kube/config
 USER root
 # RUN chmod 700 ~/.kube/config
 RUN chmod 700 /home/go/.kube/config
