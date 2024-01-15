@@ -18,7 +18,7 @@ RUN mkdir -p /etc/docker; cd /etc/docker; echo -e '{ \n\
         "registry-mirrors": ["http://sparrow-harbor.fasoo.com:30780","https://mirror.gcr.io"], \n\
         "experimental": true, \n\
         "builder": {"Entitlements": {"security-insecure": true }} \n\
-}'  > daemon.json ; cat daemon.json 
+}'  > daemon.json ; cat daemon.json ; rc-service docker restart ; rc-update add docker boot
 
 
 
