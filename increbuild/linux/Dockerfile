@@ -52,6 +52,19 @@ RUN mkdir -p /etc/docker; cd /etc/docker; echo ' {\n\
 
 RUN git config --global core.symlinks false ; chown root:root /usr/bin/sudo && chmod 4755 /usr/bin/sudo; chown root:root /usr/lib/sudo/sudoers.so; chown root:root /etc/sudoers; exit 0
 
+RUN cd /usr/local/share/ca-certificates/; \
+      curl --insecure -O https://nexus.sparrow.local/repository/sparrow/infra/rootca.crt; \
+      /usr/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      /opt/java/openjdk/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      /usr/lib/jvm/zulu11-ca-amd64/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      /usr/lib/jvm/zulu13-ca-amd64/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      /usr/lib/jvm/zulu17-ca-amd64/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      /usr/lib/jvm/zulu19-ca-amd64/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      /usr/lib/jvm/zulu8-ca-amd64/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
+      update-ca-certificates
+
+RUN git config --system --add safe.directory '*'
+
 USER buildagent
 # RUN sed -i "s#FJ_MIN_UNSUPPORTED_JAVA_VERSION=12#FJ_MIN_UNSUPPORTED_JAVA_VERSION=18#g" /opt/buildagent/bin/agent.sh
 
@@ -173,6 +186,7 @@ ADD --chown=buildagent:buildagent ssh.tar /home/buildagent/.ssh
 
 RUN git config --global --add safe.directory /opt/buildagent/work
 RUN git config --global --add safe.directory "*"
+RUN git config --global --add safe.directory '*'
 RUN git config --global --add safe.directory "/opt/buildagent/work/*"
 
 

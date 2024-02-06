@@ -20,7 +20,7 @@
 
 
 #2021.2
-docker build -f linux/Dockerfile -t sparrow-harbor.fasoo.com:32023/infra/gocd-agent:latest .
+docker build -f gocd/linux/Dockerfile -t sparrow-harbor.fasoo.com:32023/infra/gocd-agent:latest .
 
 
 docker login -u 'robot$teamcity_agent' -p "ya3Ka8heAZH0nnFhehHD4rndizHjfww8" sparrow-harbor.fasoo.com:32023
