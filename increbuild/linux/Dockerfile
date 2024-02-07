@@ -22,7 +22,7 @@ RUN  sed -i '50,51d' /etc/apt/sources.list ; rm -rf /etc/apt/sources.list.d/perf
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
    echo "deb [signed-by=/etc/apt/keyrings/perforce.gpg] https://package.perforce.com/apt/ubuntu $(lsb_release -cs) release" | tee /etc/apt/sources.list.d/perforce.list > /dev/null && \
     echo "install docker-ce docker-ce-cli containerd.io docker-compose-plugin" && \
-    chmod a+r /etc/apt/keyrings/docker.gpg && apt-get update && apt-get install  --no-install-recommends  --no-install-suggests  -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin aufs-tools cgroupfs-mount cgroup-lite && \
+    chmod a+r /etc/apt/keyrings/docker.gpg && apt-get update && apt-get install  --no-install-recommends  --no-install-suggests  -y docker-ce=5:24.0.9-1~ubuntu.20.04~focal docker-ce-cli=5:24.0.9-1~ubuntu.20.04~focal containerd.io docker-buildx-plugin docker-compose-plugin aufs-tools cgroupfs-mount cgroup-lite && \
     curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb && \
     echo "install ./zulu-repo_1.0.0-3_all.deb" && \
     apt-get install  --no-install-recommends  --no-install-suggests  -y ./zulu-repo_1.0.0-3_all.deb && \
