@@ -4,6 +4,7 @@ FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.3-lin
 
 
 USER root
+RUN ulimit -n 65536
 ARG DEBIAN_FRONTEND=noninteractive
 RUN echo "Acquire::http::Pipeline-Depth 0;"   >>/etc/apt/apt.conf.d/99fixbadproxy
 RUN echo "Acquire::http::No-Cache true;"   >>/etc/apt/apt.conf.d/99fixbadproxy
