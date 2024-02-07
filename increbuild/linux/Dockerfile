@@ -67,6 +67,7 @@ RUN cd /usr/local/share/ca-certificates/; \
 RUN git config --system --add safe.directory '*'
 
 USER buildagent
+RUN ulimit -n 65536
 # RUN sed -i "s#FJ_MIN_UNSUPPORTED_JAVA_VERSION=12#FJ_MIN_UNSUPPORTED_JAVA_VERSION=18#g" /opt/buildagent/bin/agent.sh
 
 RUN git config --global core.symlinks false ; mkdir ~/.m2; cd ~/.m2; echo '<?xml version="1.0" encoding="UTF-8"?>\n\ 
