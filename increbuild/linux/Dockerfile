@@ -66,6 +66,7 @@ RUN cd /usr/local/share/ca-certificates/; \
       /usr/lib/jvm/zulu8-ca-amd64/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
       update-ca-certificates
 
+RUN git config --global --add safe.directory "*"
 RUN git config --system --add safe.directory '*'
 
 USER buildagent
@@ -187,10 +188,6 @@ RUN mkdir ~/.ssh; cd ~/.ssh; echo 'KexAlgorithms +diffie-hellman-group1-sha1\n\n
 Host *\n\
     StrictHostKeyChecking no' > config
 ADD --chown=buildagent:buildagent ssh.tar /home/buildagent/.ssh
-
-RUN git config --global --add safe.directory /opt/buildagent/work
-RUN git config --global --add safe.directory "/opt/buildagent/work/*"
-RUN git config --global --add safe.directory '*'
 RUN git config --global --add safe.directory "*"
 
 
