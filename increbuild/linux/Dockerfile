@@ -17,12 +17,14 @@ ENV DOCKER_CLI_EXPERIMENTAL=enabled
 ENV DOCKER_BUILDKIT=0
 ENV TZ=Asia/Seoul
 
-RUN  sed -i '50,51d' /etc/apt/sources.list ; rm -rf /etc/apt/sources.list.d/perforce.list /etc/apt/sources.list.d/docker.list ; apt-get remove docker docker-engine docker.io containerd runc && echo "update" ;  apt-get update  ; echo" install" ; apt-get install  --no-install-recommends  --no-install-suggests -y ca-certificates curl gnupg apt-utils aptitude &&  apt-get install  --no-install-recommends  --no-install-suggests -y  software-properties-common curl lsb-release &&  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
+RUN  sed -i '50,51d' /etc/apt/sources.list ; rm -rf /etc/apt/sources.list.d/perforce.list /etc/apt/sources.list.d/docker.list ; apt-get remove docker docker-engine docker.io containerd runc && echo "update" ;  apt-get update  ; echo "install" ; apt-get install  --no-install-recommends  --no-install-suggests -y ca-certificates curl gnupg apt-utils aptitude &&  apt-get install  --no-install-recommends  --no-install-suggests -y  software-properties-common curl lsb-release &&  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
+    apt-add-repository ppa:git-core/ppa && \
+    apt-get update && \
     mkdir -m 0755 -p /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && curl -fsSL  https://package.perforce.com/perforce.pubkey | gpg --dearmor -o /etc/apt/keyrings/perforce.gpg &&  \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
    echo "deb [signed-by=/etc/apt/keyrings/perforce.gpg] https://package.perforce.com/apt/ubuntu $(lsb_release -cs) release" | tee /etc/apt/sources.list.d/perforce.list > /dev/null && \
     echo "install docker-ce docker-ce-cli containerd.io docker-compose-plugin" && \
-    chmod a+r /etc/apt/keyrings/docker.gpg && apt-get update && apt-get install  --no-install-recommends  --no-install-suggests  -y docker-ce=5:24.0.9-1~ubuntu.20.04~focal docker-ce-cli=5:24.0.9-1~ubuntu.20.04~focal containerd.io docker-buildx-plugin docker-compose-plugin aufs-tools cgroupfs-mount cgroup-lite && \
+    chmod a+r /etc/apt/keyrings/docker.gpg && apt-get update && apt-get install  --no-install-recommends  --no-install-suggests  -y git docker-ce=5:24.0.9-1~ubuntu.20.04~focal docker-ce-cli=5:24.0.9-1~ubuntu.20.04~focal containerd.io docker-buildx-plugin docker-compose-plugin aufs-tools cgroupfs-mount cgroup-lite && \
     curl -O https://cdn.azul.com/zulu/bin/zulu-repo_1.0.0-3_all.deb && \
     echo "install ./zulu-repo_1.0.0-3_all.deb" && \
     apt-get install  --no-install-recommends  --no-install-suggests  -y ./zulu-repo_1.0.0-3_all.deb && \
@@ -187,8 +189,10 @@ Host *\n\
 ADD --chown=buildagent:buildagent ssh.tar /home/buildagent/.ssh
 
 RUN git config --global --add safe.directory /opt/buildagent/work
-RUN git config --global --add safe.directory "*"
-RUN git config --global --add safe.directory '*'
 RUN git config --global --add safe.directory "/opt/buildagent/work/*"
+RUN git config --global --add safe.directory '*'
+RUN git config --global --add safe.directory "*"
+
+
 
 
