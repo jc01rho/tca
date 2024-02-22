@@ -20,13 +20,6 @@ SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPref
 RUN  powershell .\windows-requires.ps1; powershell .\windows-vs-install13.ps1; powershell .\windows-vs-install-dotnet.ps1;  powershell .\windows-vs-install14.ps1; powershell .\windows-vs-install15.ps1; powershell .\windows-vs-install16.ps1; powershell .\windows-vs-install17.ps1 ; powershell -Command Remove-Item .\windows-requires.ps1; Remove-Item .\windows-vs-install-dotnet.ps1; Remove-Item .\windows-vs-install13.ps1; Remove-Item .\windows-vs-install14.ps1; Remove-Item .\windows-vs-install15.ps1; Remove-Item .\windows-vs-install16.ps1; Remove-Item .\windows-vs-install17.ps1;
 
 
-RUN [Environment]::SetEnvironmentVariable("JDK_13", "C:\Program Files\Java\13", "Machine")
-RUN [Environment]::SetEnvironmentVariable("JDK_1_8", "C:\Program Files\Java\1.8", "Machine")
-
-
-
-
-
 USER ContainerAdministrator
 # COPY context/run-agent.ps1 ./BuildAgent/.
 
@@ -120,14 +113,14 @@ RUN Expand-Archive c:\java_1.8.zip -DestinationPath 'C:\Program Files\Java\1.8' 
 RUN $newPath = ('{0}\Java\1.8\bin;{1}' -f $env:ProgramFiles, $env:PATH); `
 	Write-Host ('Updating PATH: {0}' -f $newPath); `
 	[Environment]::SetEnvironmentVariable('PATH', $newPath, [EnvironmentVariableTarget]::Machine); `
-	[Environment]::SetEnvironmentVariable("JDK_13", "C:\Program Files\Java\13", "Machine"); 
+	[Environment]::SetEnvironmentVariable('JDK_13', 'C:\Program Files\Java\13', 'Machine'); 
 
 
 
 RUN $newPath = ('{0}\Java\13\bin;{1}' -f $env:ProgramFiles, $env:PATH); `
 	Write-Host ('Updating PATH: {0}' -f $newPath); `
 	[Environment]::SetEnvironmentVariable('PATH', $newPath, [EnvironmentVariableTarget]::Machine); `
-	[Environment]::SetEnvironmentVariable("JDK_1_8", "C:\Program Files\Java\1.8", "Machine");
+	[Environment]::SetEnvironmentVariable('JDK_1_8', 'C:\Program Files\Java\1.8', 'Machine');
 
 
 
