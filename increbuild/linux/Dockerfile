@@ -19,7 +19,7 @@ ENV TZ=Asia/Seoul
 
 RUN  sed -i '50,51d' /etc/apt/sources.list ; rm -rf /etc/apt/sources.list.d/perforce.list /etc/apt/sources.list.d/docker.list ; apt-get remove docker docker-engine docker.io containerd runc && echo "update" ;  apt-get update  ; echo "install" ; apt-get install  --no-install-recommends  --no-install-suggests -y ca-certificates curl gnupg apt-utils aptitude &&  apt-get install  --no-install-recommends  --no-install-suggests -y  software-properties-common curl lsb-release &&  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
     apt-add-repository ppa:git-core/ppa && \
-    apt-get update && \
+    apt-get update && apt-get upgrade -y && \
     mkdir -m 0755 -p /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && curl -fsSL  https://package.perforce.com/perforce.pubkey | gpg --dearmor -o /etc/apt/keyrings/perforce.gpg &&  \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null && \
    echo "deb [signed-by=/etc/apt/keyrings/perforce.gpg] https://package.perforce.com/apt/ubuntu $(lsb_release -cs) release" | tee /etc/apt/sources.list.d/perforce.list > /dev/null && \
@@ -66,7 +66,6 @@ RUN cd /usr/local/share/ca-certificates/; \
       /usr/lib/jvm/zulu8-ca-amd64/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
       update-ca-certificates
 
-RUN git config --global --add safe.directory "*"
 RUN git config --system --add safe.directory '*'
 
 USER buildagent
@@ -186,10 +185,13 @@ RUN mkdir ~/.docker; cd ~/.docker; echo ' {\n\
 
 RUN mkdir ~/.ssh; cd ~/.ssh; echo 'KexAlgorithms +diffie-hellman-group1-sha1\n\n\
 Host *\n\
-    StrictHostKeyChecking no' > config
+    StrictHostKeyChecking no\n\
+    HostKeyAlgorithms +ssh-rsa' > config
+
+RUN cd /opt/buildagent/conf; echo "teamcity.git.use.native.ssh=true" >> buildAgent.properties
+
 ADD --chown=buildagent:buildagent ssh.tar /home/buildagent/.ssh
-RUN git config --global --add safe.directory "*"
-
-
+RUN git config --global --add safe.directory '*'
+# RUN git config --global --add safe.directory /opt/buildagent/work
 
 
