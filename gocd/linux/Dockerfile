@@ -27,13 +27,24 @@ RUN cd /usr/local/share/ca-certificates/; \
       update-ca-certificates
 
 
+
+ADD config.kube /home/go/.kube/config
+
+ADD --chown=root:root ssh.tar /root/.ssh
+ADD ./ssh/id_rsa /root/.ssh/id_rsa
+ADD ./ssh/id_rsa.pub /root/.ssh/id_rsa.pub
+
+RUN cd ~ ; docker login -u 'robot$teamcity_agent' -p "ya3Ka8heAZH0nnFhehHD4rndizHjfww8" sparrow-harbor.fasoo.com:32023 ;helm repo add sparrow-infra http://sparrow-nexus.fasoo.com:8081/repository/sparrow-helm/ --username admin --password 1234 ; helm repo update
+
 USER go
 RUN cd ~ ; docker login -u 'robot$teamcity_agent' -p "ya3Ka8heAZH0nnFhehHD4rndizHjfww8" sparrow-harbor.fasoo.com:32023 ;helm repo add sparrow-infra http://sparrow-nexus.fasoo.com:8081/repository/sparrow-helm/ --username admin --password 1234 ; helm repo update
 # ADD config ~/.kube/config
 ADD config.kube /home/go/.kube/config
 
+ADD --chown=go:root ssh.tar /home/go/.ssh
 ADD ./ssh/id_rsa /home/go/.ssh/id_rsa
 ADD ./ssh/id_rsa.pub /home/go/.ssh/id_rsa.pub
+
 
 USER root
 # RUN chmod 700 ~/.kube/config
