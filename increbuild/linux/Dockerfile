@@ -1,6 +1,6 @@
 
-# FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.3-linux-sudo
-FROM sparrow-harbor.fasoo.com:32023/infra/teamcity-agent:2021.2.3-linux-sudo-sparrow-5
+FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.3-linux-sudo
+# FROM sparrow-harbor.fasoo.com:32023/infra/teamcity-agent:2021.2.3-linux-sudo-sparrow-5
 
 
 USER root
