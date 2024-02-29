@@ -146,7 +146,7 @@ RUN git config --global core.symlinks false ; mkdir ~/.m2; cd ~/.m2; echo '<?xml
      </activeProfiles>\n\ 
   </settings>' > settings.xml
 #2021.1.4-linux-sudo-3
-RUN cd /usr/local/bin; sudo curl -LO https://dl.k8s.io/release/v1.21.4/bin/linux/amd64/kubectl ;sudo chmod +x kubectl ; cd ~ ;curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash ; helm plugin install https://github.com/chartmuseum/helm-push  ; helm repo add sparrow-infra http://sparrow-nexus.fasoo.com:8081/repository/sparrow-helm/ --username admin --password 1234
+RUN cd /usr/local/bin; sudo curl -LO https://dl.k8s.io/release/v1.25.9/bin/linux/amd64/kubectl ;sudo chmod +x kubectl ; cd ~ ;curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash ; helm plugin install https://github.com/chartmuseum/helm-push  ; helm repo add sparrow-infra http://sparrow-nexus.fasoo.com:8081/repository/sparrow-helm/ --username admin --password 1234
 #2021.1.4-linux-sudo-4
 #RUN docker login -u 'robot$teamcity' -p "CYUnhdZeCWBuXcGeSBRwiRXPfZIkcylC" sparrow-harbor.fasoo.com:32023
 
