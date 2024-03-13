@@ -14,7 +14,7 @@ RUN curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | b
 # end - kubectl
 
 RUN mkdir -p /etc/docker; cd /etc/docker; echo -e '{ \n\ 
-        "insecure-registries" : [ "192.168.11.124:8082","192.168.11.124:8099","sparrow-harbor.fasoo.com:32023" ], \n\
+        "insecure-registries" : [ "192.168.11.124:8082","192.168.11.124:8099","sparrow-harbor.fasoo.com:32023","io.docker.k8s.sparrow.local" ], \n\
         "registry-mirrors": ["http://io.docker.k8s.sparrow.local"], \n\
         "experimental": true, \n\
         "builder": {"Entitlements": {"security-insecure": true }} \n\

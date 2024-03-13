@@ -43,7 +43,7 @@ RUN  sed -i '50,51d' /etc/apt/sources.list ; rm -rf /etc/apt/sources.list.d/perf
 # RUN bash -c 'echo "DOCKER_OPTS=\"--insecure-registry 192.168.11.124:8082 --insecure-registry 192.168.11.124:8099  --insecure-registry sparrow-harbor.fasoo.com:32023 \"" >> /etc/default/docker'
 
 RUN mkdir -p /etc/docker; cd /etc/docker; echo ' {\n\ 
-        "insecure-registries" : [ "192.168.11.124:8082","192.168.11.124:8099","sparrow-harbor.fasoo.com:32023" ], \n\
+        "insecure-registries" : [ "192.168.11.124:8082","192.168.11.124:8099","sparrow-harbor.fasoo.com:32023","io.docker.k8s.sparrow.local" ], \n\
         "registry-mirrors": ["http://io.docker.k8s.sparrow.local"], \n\
         "experimental": true, \n\
         "builder": {"Entitlements": {"security-insecure": true }}, \n\
