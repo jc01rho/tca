@@ -32,7 +32,7 @@ RUN  sed -i '50,51d' /etc/apt/sources.list ; rm -rf /etc/apt/sources.list.d/perf
    #  apt-add-repository 'deb http://repos.azulsystems.com/ubuntu stable main' && \
     apt-get update && \
     echo "install zulu8-ca zulu13-ca zip unzip git openssh-client jq tzdata bash  python3 python3-pip python3-dev" && \
-    apt-get install  --no-install-recommends  --no-install-suggests  -y wget zulu8-ca zulu11-ca zulu13-ca zip unzip git openssh-client jq tzdata bash  python3 python3-pip python3-dev binutils keychain binfmt-support build-essential; apt-get install  --no-install-recommends  --no-install-suggests  -y zulu17-ca zulu19-ca; \
+    apt-get install  --no-install-recommends  --no-install-suggests  -y dnsutils iputils-ping net-tools wget zulu8-ca zulu11-ca zulu13-ca zip unzip git openssh-client jq tzdata bash  python3 python3-pip python3-dev binutils keychain binfmt-support build-essential; apt-get install  --no-install-recommends  --no-install-suggests  -y zulu17-ca zulu19-ca; \
     cd /usr/local/bin && \
     ln -s /usr/bin/python3 python && \
     pip3 install --upgrade pip setuptools && \
