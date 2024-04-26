@@ -183,14 +183,26 @@ RUN mkdir ~/.docker; cd ~/.docker; echo ' {\n\
         }\n\ 
 }'  > config.json
 
-RUN mkdir ~/.ssh; cd ~/.ssh; echo 'KexAlgorithms +diffie-hellman-group1-sha1\n\n\
-Host *\n\
-    StrictHostKeyChecking no\n\
-    HostKeyAlgorithms +ssh-rsa' > config
+
+
+
 
 RUN cd /opt/buildagent/conf; echo "teamcity.git.use.native.ssh=true" >> buildAgent.properties
 
 ADD --chown=buildagent:buildagent ssh.tar /home/buildagent/.ssh
+RUN mkdir -p ~/.ssh; cd ~/.ssh; echo 'KexAlgorithms +diffie-hellman-group1-sha1 \n\n\ 
+Host 192.168.100.238\n\ 
+   HostKeyAlgorithms +ssh-rsa\n\ 
+   PubkeyAcceptedKeyTypes ssh-rsa\n\ 
+ \n\ 
+ \n\ 
+Host *\n\ 
+   StrictHostKeyChecking no\n\ 
+   HostKeyAlgorithms +ssh-rsa\n\ 
+    ' > config
+
+RUN cp -r ~/.ssh ~/.sshRoot; sudo chown -R buildagent:buildagent  ~/.ssh ; sudo chown  -R root:root  ~/.sshRoot ;  sudo chmod -R 700 ~/.sshRoot; sudo chmod -R 700 ~/.ssh
+
 RUN git config --global --add safe.directory '*'
 # RUN git config --global --add safe.directory /opt/buildagent/work
 
