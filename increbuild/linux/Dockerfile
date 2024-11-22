@@ -17,6 +17,8 @@ ENV DOCKER_CLI_EXPERIMENTAL=enabled
 ENV DOCKER_BUILDKIT=0
 ENV TZ=Asia/Seoul
 
+COPY ./rootca.crt /usr/local/share/ca-certificates/rootca.crt
+
 RUN  sed -i '50,51d' /etc/apt/sources.list ; rm -rf /etc/apt/sources.list.d/perforce.list /etc/apt/sources.list.d/docker.list ; apt-get remove docker docker-engine docker.io containerd runc && echo "update" ;  apt-get update  ; echo "install" ; apt-get install  --no-install-recommends  --no-install-suggests -y ca-certificates curl gnupg apt-utils aptitude &&  apt-get install  --no-install-recommends  --no-install-suggests -y  software-properties-common curl lsb-release &&  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0xB1998361219BD9C9 && \
     apt-add-repository ppa:git-core/ppa && \
     apt-get update && apt-get upgrade -y && \
@@ -56,7 +58,7 @@ RUN mkdir -p /etc/docker; cd /etc/docker; echo ' {\n\
 RUN git config --global core.symlinks false ; chown root:root /usr/bin/sudo && chmod 4755 /usr/bin/sudo; chown root:root /usr/lib/sudo/sudoers.so; chown root:root /etc/sudoers; exit 0
 
 RUN cd /usr/local/share/ca-certificates/; \
-      curl --insecure -O https://nexus.sparrow.local/repository/sparrow/infra/rootca.crt; \
+      # curl --insecure -O https://nexus.sparrow.local/repository/sparrow/infra/rootca.crt; \
       /usr/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
       /opt/java/openjdk/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
       /usr/lib/jvm/zulu11-ca-amd64/bin/keytool -noprompt -importcert -cacerts -storepass changeit -file rootca.crt -alias sparrow.local; \
@@ -98,7 +100,7 @@ RUN git config --global core.symlinks false ; mkdir ~/.m2; cd ~/.m2; echo '<?xml
             <id>SparrowNexus</id>\n\ 
             <mirrorOf>central</mirrorOf>\n\ 
             <name>Maven central https</name>\n\ 
-            <url>http://192.168.100.123:8081/repository/public/</url>\n\ 
+            <url>http://192.168.150.38:8081/repository/public/</url>\n\ 
           </mirror>\n\ 
         <mirror>\n\ 
            <id>centralInsecure</id>\n\ 
@@ -121,14 +123,14 @@ RUN git config --global core.symlinks false ; mkdir ~/.m2; cd ~/.m2; echo '<?xml
                  </snapshots>\n\ 
                  <id>central</id>\n\ 
                  <name>Central Repository</name>\n\ 
-                 <url>http://192.168.100.123:8081/repository/Central2/</url>\n\ 
+                 <url>http://192.168.150.38:8081/repository/Central2/</url>\n\ 
               </pluginRepository>\n\ 
            </pluginRepositories>\n\ 
            <repositories>\n\ 
               <repository>\n\ 
                  <id>public</id>\n\ 
                  <name>maven central mirror Repository</name>\n\ 
-                 <url>http://192.168.100.123:8081/repository/public/</url>\n\ 
+                 <url>http://192.168.150.38:8081/repository/public/</url>\n\ 
                  <releases>\n\ 
                     <updatePolicy>always</updatePolicy>\n\ 
                     <enabled>true</enabled>\n\ 
