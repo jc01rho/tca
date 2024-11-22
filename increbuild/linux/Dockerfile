@@ -191,7 +191,7 @@ RUN mkdir ~/.docker; cd ~/.docker; echo ' {\n\
 
 RUN cd /opt/buildagent/conf; echo "teamcity.git.use.native.ssh=true" >> buildAgent.properties
 
-ADD --chown=buildagent:buildagent ssh.tar /home/buildagent/.ssh
+ADD --chown=buildagent:buildagent ssh.tar /home/buildagent/.ssh/.
 RUN mkdir -p ~/.ssh; cd ~/.ssh; echo 'KexAlgorithms +diffie-hellman-group1-sha1 \n\n\ 
 Host 192.168.100.238\n\ 
    HostKeyAlgorithms +ssh-rsa\n\ 
