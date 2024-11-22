@@ -1,6 +1,6 @@
 # escape=`
 
-FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2021.2.3-windowsservercore
+FROM sparrow-harbor.fasoo.com:32023/mirror/jetbrains/teamcity-agent:2022.04.7-windowsservercore
 # FROM sparrow-harbor.fasoo.com:32023/infra/teamcity-agent-windows:2021.2.3-sparrow-17-test
 
 
