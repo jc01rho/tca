@@ -9,9 +9,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN echo "Acquire::http::Pipeline-Depth 0;"   >>/etc/apt/apt.conf.d/99fixbadproxy
 RUN echo "Acquire::http::No-Cache true;"   >>/etc/apt/apt.conf.d/99fixbadproxy
 RUN echo "Acquire::BrokenProxy    true;"   >>/etc/apt/apt.conf.d/99fixbadproxy
-RUN sed -i 's#archive.ubuntu.com#sparrow-nexus.fasoo.com:8081/repository/apt#g' /etc/apt/sources.list
-RUN sed -i 's#mirror.ubuntu.com#sparrow-nexus.fasoo.com:8081/repository/apt#g' /etc/apt/sources.list
-RUN sed -i 's#security.ubuntu.com#sparrow-nexus.fasoo.com:8081/repository/apt#g' /etc/apt/sources.list
+# RUN sed -i 's#archive.ubuntu.com#sparrow-nexus.fasoo.com:8081/repository/apt#g' /etc/apt/sources.list
+# RUN sed -i 's#mirror.ubuntu.com#sparrow-nexus.fasoo.com:8081/repository/apt#g' /etc/apt/sources.list
+# RUN sed -i 's#security.ubuntu.com#sparrow-nexus.fasoo.com:8081/repository/apt#g' /etc/apt/sources.list
 ARG DEBCONF_NOWARNINGS="yes"
 ENV DOCKER_CLI_EXPERIMENTAL=enabled
 ENV DOCKER_BUILDKIT=0
